@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lee Laster - Professional Portfolio</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+        :root {
+            --sidebar-width-collapsed: 80px;
+            --sidebar-width-expanded: 220px;
+
+            /* Light Theme (Default) */
+            --bg-color: #f7f9fc;
+            --sidebar-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted-color: #777777;
+            --icon-color: #555555;
+            --accent-color: #007bff;
+            --border-color: #eeeeee;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --ruler-color: #CFD8DC;
+            --marker-color: #607D8B;
+            --tooltip-bg: #ffffff;
+            --chat-window-bg: transparent;
+            --user-message-bg: #e2f0ff;
+            --llm-message-bg: #f0f0f0;
+            --llm-message-border: #cccccc;
+        }
+
+        /* Dark Theme */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --sidebar-bg: #1e1e1e;
+                --text-color: #e0e0e0;
+                --text-muted-color: #b0b0b0;
+                --icon-color: #cccccc;
+                --accent-color: #4da6ff;
+                --border-color: #333333;
+                --shadow-color: rgba(0, 0, 0, 0.4);
+                --ruler-color: #455A64;
+                --marker-color: #90A4AE;
+                --tooltip-bg: #333333;
+                --chat-window-bg: transparent;
+                --user-message-bg: #2a3a50;
+                --llm-message-bg: #333333;
+                --llm-message-border: #555555;
+            }
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        #main-container {
+            display: flex;
+            width: 100%;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width-expanded);
+            background-color: var(--sidebar-bg);
+            box-shadow: 2px 0 10px var(--shadow-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        #sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+            padding: 10px;
+        }
+
+        #content-area {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width-expanded);
+            padding: 20px 40px;
+            transition: margin-left 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-expanded #content-area {
+            margin-left: var(--sidebar-width-expanded);
+        }
+
+        .sidebar-collapsed #content-area {
+            margin-left: var(--sidebar-width-collapsed);
+        }
+
+        /* Profile & Header */
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-color);
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header-content h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .header-content p {
+            font-size: 1.2em;
+            color: var(--text-muted-color);
+            margin: 5px 0 15px;
+            text-align: center;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .contact-info a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            color: var(--accent-color);
+        }
+
+        .contact-info i {
+            margin-right: 8px;
+            color: var(--icon-color);
+            transition: color 0.3s ease;
+        }
+
+        .contact-info a:hover i {
+            color: var(--accent-color);
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: var(--sidebar-width-expanded);
+            width: 40px;
+            height: 40px;
+            background-color: var(--sidebar-bg);
+            border-radius: 50%;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: left 0.3s ease, transform 0.3s ease;
+            z-index: 101;
+            transform: translateX(-50%);
+        }
+
+        .sidebar-collapsed .toggle-btn {
+            left: var(--sidebar-width-collapsed);
+            transform: translateX(-50%) rotate(180deg);
+        }
+        
+        /* Chatbot toggle button */
+        #chat-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 102;
+            transition: transform 0.3s ease;
+        }
+
+        #chat-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Chat window */
+        #chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background-color: var(--chat-window-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 101;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+            background-color: var(--sidebar-bg);
+        }
+        
+        #chat-window.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #chat-header {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        #chat-header i {
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        #chat-box {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--bg-color);
+        }
+        
+        .chat-message {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 0.9em;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: var(--user-message-bg);
+            color: var(--text-color);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .llm-message {
+            background-color: var(--llm-message-bg);
+            color: var(--text-color);
+            align-self: flex-start;
+            border: 1px solid var(--llm-message-border);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .llm-message p {
+            margin: 0;
+        }
+
+        #chat-input-container {
+            padding: 10px;
+            display: flex;
+            background-color: var(--sidebar-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        #chat-input-container input {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            font-size: 0.9em;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        #chat-input-container button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        #chat-input-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Main Content Sections */
+        section {
+            background-color: var(--sidebar-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: var(--ruler-color);
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            z-index: 1;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-top: 0;
+            color: var(--text-color);
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        ul li::before {
+            content: '•';
+            color: var(--accent-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            font-size: 1.2em;
+        }
+
+        .job-entry {
+            margin-bottom: 30px;
+        }
+
+        .job-entry .company {
+            font-weight: 500;
+            color: var(--text-muted-color);
+            margin: 5px 0;
+        }
+
+        .job-entry .dates {
+            font-style: italic;
+            color: var(--text-muted-color);
+            margin: 5px 0 15px;
+        }
+
+        /* Skills section */
+        #skills-section .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .skill-item {
+            background-color: var(--bg-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border-color: var(--accent-color);
+        }
+        
+        /* Language section */
+        #languages-section .language-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .language-item .lang-name {
+            font-weight: 500;
+        }
+
+        .language-item .proficiency-bar {
+            flex-grow: 1;
+            height: 10px;
+            background-color: var(--bg-color);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .proficiency-level {
+            height: 100%;
+            background-color: var(--accent-color);
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #main-container {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                position: relative;
+                width: 100% !important;
+                box-shadow: none;
+                padding: 20px;
+                order: -1;
+            }
+
+            #content-area {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .toggle-btn {
+                display: none;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="main-container" class="sidebar-expanded">
+        <aside id="sidebar">
+            <div class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <img src="https://www.gravatar.com/avatar/6a7e0892c575a7c2e3d30999554a9354?s=200" alt="Lee Laster" class="profile-photo">
+            <div class="header-content">
+                <h1>Lee Laster</h1>
+                <p>Fractional CMO and Business Development Director</p>
+                <div class="contact-info">
+                    <a href="mailto:leelaster@gmail.com"><i class="fas fa-envelope"></i> leelaster@gmail.com</a>
+                    <a href="tel:+972542008855"><i class="fas fa-phone"></i> +972.54.200.88.55</a>
+                    <a href="https://www.linkedin.com/in/leelaster" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+            <hr style="width: 100%; border: 0; height: 1px; background-color: var(--border-color); margin: 20px 0;">
+            <div id="additional-info" style="width: 100%;">
+                <section id="languages-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Languages</h3>
+                    <div class="language-item">
+                        <span class="lang-name">Hebrew</span>
+                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 100%;"></div></div>
+                    </div>
+                    <div class="language-item">
+                        <span class="lang-name">English</span>
+                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 100%;"></div></div>
+                    </div>
+                    <div class="language-item">
+                        <span class="lang-name">French</span>
+                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 50%;"></div></div>
+                    </div>
+                </section>
+                <section id="strengths-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Strengths</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">Autodidact</div>
+                        <div class="skill-item">Team Player</div>
+                        <div class="skill-item">Data Driven</div>
+                        <div class="skill-item">Creativity</div>
+                        <div class="skill-item">Loyalty</div>
+                        <div class="skill-item">Drone Passion</div>
+                    </div>
+                </section>
+                <section id="personal-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Personal</h3>
+                    <p>Father; Pottery and Art; RC flyer & Drone Builder</p>
+                </section>
+                <section id="citizenship-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Citizenship</h3>
+                    <p>European, Israeli</p>
+                </section>
+                <section id="service-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Service</h3>
+                    <p>Israeli Air-Force, Airborne Avionics Expert</p>
+                </section>
+                <section id="education-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
+                    <h3>Education</h3>
+                    <ul>
+                        <li><p class="dates">2005</p>Post MBA Executive Studies Global Marketing - The Wharton School (Pen University)</li>
+                        <li><p class="dates">2005</p>MBA (Marketing) - Interdisciplinary Center (IDC), Herzeliya</li>
+                        <li><p class="dates">2001</p>BA in Computer Science - Academic College of Tel-Aviv Yaffo, Tel-Aviv</li>
+                    </ul>
+                </section>
+            </div>
+        </aside>
+
+        <div id="content-area">
+            <section id="professional-summary">
+                <h2>Professional Summary</h2>
+                <p id="overview-content">
+                    Strategic, results-driven B2B Executive with 16+ years of experience in online-centric marketing, sales, and business development. A creative, innovation-driven self-starter and fast learner, skilled at designing and executing full-funnel strategies, fostering strong client relationships, and achieving measurable growth.
+                </p>
+            </section>
+            <section id="experience">
+                <h2>Experience</h2>
+                <div class="job-entry">
+                    <h3>Fractional CMO and Business Development Director</h3>
+                    <p class="company">Quadpole (Tethered Drones)</p>
+                    <p class="dates">'23 - Present</p>
+                    <ul>
+                        <li>Hands-on Marketing funnel execution, leveraging Martech stack and automation tools</li>
+                        <li>Managing Business Development for expansion and product sales</li>
+                        <li>Improving conversion ratios for sales funnel with complete client journey nurturing</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Fractional CMO and Customer Success Director</h3>
+                    <p class="company">KCR (Corporate Recovery)</p>
+                    <p class="dates">'20 - Present</p>
+                    <ul>
+                        <li>In charge of Growth Marketing covering content, online presence and full funnel ownership</li>
+                        <li>Customer Success Director, focused on retention; visualization using PowerBI</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Chief Marketing Officer</h3>
+                    <p class="company">AllCloud.io (Global Cloud Solutions)</p>
+                    <p class="dates">'17-'20</p>
+                    <ul>
+                        <li>Led B2B SaaS Marketing Strategy and execution, driving brand-to-pipeline leadership</li>
+                        <li>Oversaw merger branding, positioning, GTM plans, and prepared investor-facing briefs</li>
+                        <li>Managed marketing team, Events and Conferences - delivering measurable YoY growth</li>
+                        <li>Notable Achievement: secured the company's Global Gartner magic-quadrant inclusion 2018</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Business Development Director</h3>
+                    <p class="company">Kueri.me (SaaS DB Interfaces)</p>
+                    <p class="dates">'15-'17</p>
+                    <ul>
+                        <li>All-around B2B multi-disciplinary growth manager in a fast-paced start-up environment</li>
+                        <li>Focused on Online presence, Lead generation, and successful contract negotiations</li>
+                        <li>Notable achievement: Recruited 10 design partners in 2 months, accelerating product validation</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Marketing Director (& Chief Aerial Officer)</h3>
+                    <p class="company">Terrascan LTD (Aerial Drone Mapping)</p>
+                    <p class="dates">'13-'15</p>
+                    <ul>
+                        <li>Directed comprehensive online marketing and sales</li>
+                        <li>I hold a CAAI License as a skilled LOS Drone Pilot operator</li>
+                        <li>Notable achievement: Managed development, production and licensing of Aerial Platforms</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Chief Marketing Officer</h3>
+                    <p class="company">Cortex Medical Technologies (Medical Devices)</p>
+                    <p class="dates">'09-'13</p>
+                    <ul>
+                        <li>Conducted B2B2C global Market Research and managed substantial budget (> $1 Million)</li>
+                        <li>Led a marketing team, expanded global client base and improved monthly sales metrics.</li>
+                        <li>Notable achievement: Located and signed distributor deals responsible for 25% turnover increase</li>
+                    </ul>
+                </div>
+                <div class="job-entry">
+                    <h3>Marketing & Sales Director</h3>
+                    <p class="company">Gecko (Presentations, Digital Media & Content)</p>
+                    <p class="dates">'04-'09</p>
+                    <ul>
+                        <li>Founded and managed a thriving investors' presentations agency; Team of 20+ employees</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        
+        <div id="chat-toggle-btn">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        
+        <div id="chat-window">
+            <div id="chat-header">
+                <span>Talk with Lee's CV</span>
+                <i class="fas fa-times" id="chat-close-btn"></i>
+            </div>
+            <div id="chat-box">
+                <div class="chat-message llm-message">
+                    <p>Hello! I'm an AI assistant for Lee Laster's CV. Ask me anything about his experience, skills, or professional background.</p>
+                </div>
+            </div>
+            <div id="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type your message here..." disabled>
+                <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            const mainContainer = document.getElementById('main-container');
+
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                mainContainer.classList.toggle('sidebar-collapsed');
+            });
+
+            // Chatbot functionality
+            const chatToggleBtn = document.getElementById('chat-toggle-btn');
+            const chatWindow = document.getElementById('chat-window');
+            const chatCloseBtn = document.getElementById('chat-close-btn');
+            const chatBox = document.getElementById('chat-box');
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+            
+            chatToggleBtn.addEventListener('click', () => {
+                chatWindow.classList.toggle('open');
+            });
+
+            chatCloseBtn.addEventListener('click', () => {
+                chatWindow.classList.remove('open');
+            });
+            
+            // Make chat window draggable
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+            const chatHeader = document.getElementById('chat-header');
+            
+            chatHeader.addEventListener('mousedown', dragStart);
+            chatWindow.addEventListener('mouseup', dragEnd);
+            chatWindow.addEventListener('mousemove', drag);
+            
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+
+                if (e.target === chatHeader) {
+                    isDragging = true;
+                }
+            }
+
+            function dragEnd(e) {
+                initialX = currentX;
+                initialY = currentY;
+
+                isDragging = false;
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    setTranslate(currentX, currentY, chatWindow);
+                }
+            }
+
+            function setTranslate(xPos, yPos, el) {
+                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+            }
+
+            // LLM Integration for chat
+            const apiUrl = 'YOUR_API_ENDPOINT_HERE'; 
+            const apiKey = 'YOUR_API_KEY_HERE';
+
+            sendBtn.addEventListener('click', handleUserMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleUserMessage();
+                }
+            });
+
+            async function handleUserMessage() {
+                const messageText = chatInput.value.trim();
+                if (messageText === "") return;
+
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.classList.add('chat-message', 'user-message');
+                userMessageDiv.textContent = messageText;
+                chatBox.appendChild(userMessageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                chatInput.value = '';
+                chatInput.disabled = true;
+                sendBtn.disabled = true;
+                
+                try {
+                    const llmResponse = await generateLLMResponse(messageText);
+                    displayLLMResponse(llmResponse);
+                } catch (error) {
+                    console.error("LLM API Error:", error);
+                    displayLLMResponse("I'm sorry, I couldn't process that request right now. Please try again later.");
+                } finally {
+                    chatInput.disabled = false;
+                    sendBtn.disabled = false;
+                    chatInput.focus();
+                }
+            }
+            
+            function displayLLMResponse(text) {
+                const llmMessageDiv = document.createElement('div');
+                llmMessageDiv.classList.add('chat-message', 'llm-message');
+                llmMessageDiv.innerHTML = marked.parse(text);
+                chatBox.appendChild(llmMessageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            async function generateLLMResponse(userMessage) {
+                const systemPrompt = `You are an AI assistant for Lee Laster's resume. Your role is to answer questions based *only* on the provided resume content.
+                    Do not invent or add information not explicitly present in the resume. If a question cannot be answered from the resume, politely state that the information is not available.
+                    The resume content is as follows:
+                    
+                    ${getResumeText()}
+
+                    Based on this, answer the following question: "${userMessage}"`;
+                
+                const payload = {
+                    contents: [{
+                        role: 'user',
+                        parts: [{ text: systemPrompt }]
+                    }]
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                   return "I couldn't generate a response. Please try again.";
+                }
+            }
+            
+            function getResumeText() {
+                let resumeContext = `Professional Summary: ${document.querySelector('#overview-content').textContent.trim()}\n`;
+                resumeContext += `Skills: ${Array.from(document.querySelectorAll('#strengths-section .skill-item')).map(el => el.textContent.trim()).join(', ')}\n`;
+                
+                const experienceEntries = document.querySelectorAll('#experience .job-entry');
+                let experienceDetails = "";
+                experienceEntries.forEach(job => {
+                     const title = job.querySelector('h3').textContent.trim();
+                     const company = job.querySelector('.company').textContent.trim();
+                     const details = Array.from(job.querySelectorAll('ul li')).map(li => li.textContent.trim());
+                     experienceDetails += `- ${title} at ${company}: ${details.join(', ')}\n`;
+                });
+                resumeContext += `Experience: ${experienceDetails}\n`;
+                
+                const educationEntries = document.querySelectorAll('#education-section ul li');
+                let educationDetails = "";
+                educationEntries.forEach(edu => {
+                    educationDetails += `- ${edu.textContent.trim()}\n`;
+                });
+                resumeContext += `Education: ${educationDetails}\n`;
+                
+                resumeContext += `Service: ${document.querySelector('#service-section p').textContent.trim()}\n`;
+                resumeContext += `Citizenship: ${document.querySelector('#citizenship-section p').textContent.trim()}\n`;
+                resumeContext += `Languages: ${Array.from(document.querySelectorAll('#languages-section .lang-name')).map(el => el.textContent.trim()).join(', ')}\n`;
+                resumeContext += `Personal: ${document.querySelector('#personal-section p').textContent.trim()}\n`;
+                
+                return resumeContext;
+            }
+        });
+    </script>
+</body>
+</html>
