@@ -25,816 +25,723 @@
             --marker-color: #607D8B;
             --tooltip-bg: #ffffff;
             --chat-window-bg: transparent;
-            --user-message-bg: #e2f0ff;
-            --llm-message-bg: #f0f0f0;
-            --llm-message-border: #cccccc;
+            --user-bubble-bg: #dcf8c6;
+            --bot-bubble-bg: #ffffff;
         }
 
-        /* Dark Theme */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121212;
-                --sidebar-bg: #1e1e1e;
-                --text-color: #e0e0e0;
-                --text-muted-color: #b0b0b0;
-                --icon-color: #cccccc;
-                --accent-color: #4da6ff;
-                --border-color: #333333;
-                --shadow-color: rgba(0, 0, 0, 0.4);
-                --ruler-color: #455A64;
-                --marker-color: #90A4AE;
-                --tooltip-bg: #333333;
-                --chat-window-bg: transparent;
-                --user-message-bg: #2a3a50;
-                --llm-message-bg: #333333;
-                --llm-message-border: #555555;
-            }
+        body.dark-mode {
+            /* Dark Theme */
+            --bg-color: #1a1a1a;
+            --sidebar-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted-color: #a0a0a0;
+            --icon-color: #bbbbbb;
+            --accent-color: #03a9f4;
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --ruler-color: #444;
+            --marker-color: #999;
+            --tooltip-bg: #2c2c2c;
+            --chat-window-bg: transparent;
+            --user-bubble-bg: #056162;
+            --bot-bubble-bg: #2c2c2c;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Layout */
-        #main-container {
-            display: flex;
+        .page-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
             width: 100%;
+            display: flex;
         }
 
-        #sidebar {
-            width: var(--sidebar-width-expanded);
-            background-color: var(--sidebar-bg);
-            box-shadow: 2px 0 10px var(--shadow-color);
+        /* --- Sidebar Navigation --- */
+        .sidebar { width: var(--sidebar-width-collapsed); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); padding: 20px 0; display: flex; flex-direction: column; align-items: center; transition: width 0.3s ease, background-color 0.3s ease, transform 0.3s ease-in-out; overflow-x: hidden; box-shadow: 4px 0 15px var(--shadow-color); z-index: 100; }
+        .sidebar:hover { width: var(--sidebar-width-expanded); }
+        .sidebar-nav { list-style: none; width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .nav-item { margin-bottom: 10px; }
+        .nav-link { display: flex; align-items: center; padding: 12px 25px; color: var(--icon-color); text-decoration: none; white-space: nowrap; border-left: 3px solid transparent; }
+        .nav-link:hover { background-color: var(--bg-color); color: var(--accent-color); }
+        .nav-link.active-link { color: var(--accent-color); border-left-color: var(--accent-color); }
+        .nav-link .icon { width: 24px; height: 24px; min-width: 24px; fill: currentColor; transition: fill 0.2s ease; }
+        .nav-text { margin-left: 20px; opacity: 0; transition: opacity 0.2s ease; font-weight: 500; }
+        .sidebar:hover .nav-text, .sidebar.open .nav-text { opacity: 1; transition-delay: 0.1s; }
+        .mode-switcher { margin-top: auto; }
+        .mode-options { display: flex; align-items: center; justify-content: flex-start; margin-left: 20px; opacity: 0; transition: opacity 0.2s ease; height: 0; overflow: hidden; }
+        .sidebar:hover .mode-options { opacity: 1; height: auto; transition-delay: 0.1s; }
+        .mode-btn { background: none; border: 1px solid var(--border-color); color: var(--text-muted-color); padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; }
+        .mode-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .mode-btn.active { background-color: var(--accent-color); color: var(--sidebar-bg); border-color: var(--accent-color); }
+
+        /* --- Main Content Area --- */
+        .main-content { margin-left: var(--sidebar-width-collapsed); width: calc(100% - var(--sidebar-width-collapsed)); display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s ease, width 0.3s ease; }
+        .sidebar:hover ~ .main-content { margin-left: var(--sidebar-width-expanded); width: calc(100% - var(--sidebar-width-expanded)); }
+
+        .content-wrapper { display: flex; flex-grow: 1; position: relative; }
+
+        .content-area { flex-grow: 1; padding: 20px 40px; display: flex; flex-direction: column; }
+
+        .main-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .main-header h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 5px; }
+        .main-header p { font-size: 1.1em; color: var(--text-muted-color); }
+
+        #dynamic-content-container { flex-grow: 1; position: relative; }
+        #dynamic-content-container.chat-mode .content-section:not(#ai-chat-content) { display: none; }
+        #dynamic-content-container.chat-mode #ai-chat-content { display: flex; }
+
+        /* --- Dynamic Content Styling --- */
+        .personal-details { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 30px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .personal-details li { display: flex; align-items: center; }
+        .personal-details a { color: var(--text-color); text-decoration: none; display: flex; align-items: center; }
+        .personal-details a:hover { color: var(--accent-color); }
+        .personal-details .icon { width: 18px; height: 18px; fill: var(--text-muted-color); margin-right: 8px; transition: fill 0.2s ease; }
+        .personal-details a:hover .icon { fill: var(--accent-color); }
+
+        .content-section { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .content-section.active-section { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .content-section h2 { font-size: 1.8em; margin-bottom: 20px; color: var(--accent-color); }
+        .content-section p { line-height: 1.8; margin-bottom: 15px; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .skill-category h3 { margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; }
+        .skill-category ul { list-style: none; padding: 0; }
+        .skill-category li { margin-bottom: 4px; padding-left: 20px; position: relative; }
+        .skill-category li::before { content: '✓'; position: absolute; left: 0; color: var(--accent-color); }
+        .skill-category.full-width { grid-column: 1 / -1; }
+        #business-skills-list { column-count: 2; column-gap: 40px; }
+
+        .education-item, .job-detail-item { margin-bottom: 20px; padding-left: 20px; border-left: 3px solid var(--accent-color); }
+        .education-item h3, .job-detail-item h3 { margin: 0; }
+        .education-item p, .job-detail-item p { margin: 5px 0 0 0; color: var(--text-muted-color); }
+        .job-detail-item ul { list-style: none; padding: 10px 0 0 0; }
+        .job-detail-item li { margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .job-detail-item li::before { content: '•'; position: absolute; left: 0; color: var(--accent-color); }
+        .job-detail-item li strong { font-weight: 500; }
+
+        /* --- Accordion for Mobile Experience --- */
+        .experience-accordion .accordion-item { border-bottom: 1px solid var(--border-color); }
+        .accordion-header { display: flex; align-items: center; cursor: pointer; padding: 15px 5px; }
+        .accordion-header h3 { font-size: 1.0em; margin: 0; font-weight: 500;}
+        .accordion-header .arrow { transition: transform 0.3s ease; margin-right: 10px;}
+        .accordion-item.active .accordion-header .arrow { transform: rotate(90deg); }
+        .accordion-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; padding-left: 25px; }
+        .accordion-item.active .accordion-details { max-height: 1000px; padding-top: 10px; padding-bottom: 15px; }
+
+
+        /* --- Timeline (Right side) --- */
+        .timeline-container { min-width: 250px; max-width: 250px; padding: 20px 0 20px 20px; position: relative; }
+        .timeline-ruler { position: absolute; top: 0; bottom: 0; right: 40px; width: 4px; background-color: var(--ruler-color); border-radius: 2px; }
+        .timeline-event { position: relative; padding: 15px 0; margin-top: 10px; height: 50px; cursor: pointer;}
+
+        .timeline-marker { position: absolute; top: 50%; right: 42px; transform: translate(50%, -50%); width: 32px; height: 32px; background-color: var(--bg-color); border: 3px solid var(--ruler-color); border-radius: 50%; z-index: 2; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
+        .timeline-marker .icon { width: 18px; height: 18px; fill: var(--marker-color); }
+        .timeline-event:hover .timeline-marker, .timeline-event.active-event .timeline-marker { border-color: var(--accent-color); transform: translate(50%, -50%) scale(1.1); }
+        .timeline-event:hover .icon, .timeline-event.active-event .icon { fill: var(--accent-color); }
+        .timeline-year { position: absolute; top: 50%; right: 80px; transform: translateY(-50%); font-weight: 700; color: var(--marker-color); }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; top: 50%; right: 125px; transform: translateY(-50%) scale(0.95); background-color: var(--tooltip-bg); padding: 15px; border-radius: 8px; box-shadow: 0 10px 30px var(--shadow-color); width: 240px; z-index: 10; transition: all 0.3s ease-in-out; border: 1px solid var(--border-color); }
+        .tooltip::after { content: ''; position: absolute; top: 50%; left: 100%; transform: translateY(-50%); border-width: 8px; border-style: solid; border-color: transparent transparent transparent var(--tooltip-bg); }
+        .timeline-event:hover .tooltip { visibility: visible; opacity: 1; transform: translateY(-50%) scale(1); }
+
+        .timeline-event:first-child .tooltip { top: 0; transform: translateY(0) scale(0.95); }
+        .timeline-event:first-child:hover .tooltip { transform: translateY(0) scale(1); }
+        .timeline-event:first-child .tooltip::after { top: 15px; }
+
+        .tooltip h3 { margin: 0; font-size: 1em; color: var(--text-color); }
+        .tooltip h4 { margin: 0; font-size: 0.8em; color: var(--text-muted-color); }
+
+        /* --- Chat --- */
+        #ai-chat-content { height: 100%; flex-direction: column; background: var(--chat-window-bg); border-radius: 8px; overflow: hidden; }
+        .chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; max-height: calc(100vh - 250px); }
+        .chat-message { display: flex; margin-bottom: 15px; max-width: 80%; }
+        .user-message { margin-left: auto; flex-direction: row-reverse; }
+        .bot-message { margin-right: auto; }
+        .message-bubble { padding: 10px 15px; border-radius: 18px; line-height: 1.5; }
+        .message-bubble ul, .message-bubble ol { margin: 10px 0 10px 20px; padding: 0;}
+        .message-bubble li { margin-bottom: 5px; }
+        .user-message .message-bubble { background-color: var(--user-bubble-bg); border-bottom-right-radius: 4px; color: #111; }
+        .bot-message .message-bubble { background-color: var(--bot-bubble-bg); border-bottom-left-radius: 4px; }
+        .typing-indicator span { height: 8px; width: 8px; margin: 0 2px; background-color: var(--text-muted-color); border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        .chat-form-container { border-top: 1px solid var(--border-color); background-color: var(--bg-color); padding: 15px 20px; display: flex; flex-direction: column; transition: background-color 0.3s ease; }
+        .chat-form { display: flex; }
+        #chat-input { flex-grow: 1; border: 2px solid var(--ruler-color); padding: 12px 15px; border-radius: 20px; background-color: var(--bg-color); color: var(--text-color); font-size: 1em; transition: all 0.3s ease; resize: none; }
+        #chat-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); border-color: var(--accent-color); }
+        #chat-input::placeholder { color: var( --accent-color ); font-weight: bold; font-size: 1em; opacity: 0.8; }
+        #send-btn { background: none; border: none; cursor: pointer; padding: 0 15px; align-self: center; fill: var(--accent-color); }
+
+        /* --- Mobile Responsiveness --- */
+        .mobile-menu-toggle {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: width 0.3s ease;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        #sidebar.collapsed {
-            width: var(--sidebar-width-collapsed);
-            padding: 10px;
-        }
-
-        #content-area {
-            flex-grow: 1;
-            margin-left: var(--sidebar-width-expanded);
-            padding: 20px 40px;
-            transition: margin-left 0.3s ease;
-            position: relative;
-        }
-
-        .sidebar-expanded #content-area {
-            margin-left: var(--sidebar-width-expanded);
-        }
-
-        .sidebar-collapsed #content-area {
-            margin-left: var(--sidebar-width-collapsed);
-        }
-
-        /* Profile & Header */
-        .profile-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--accent-color);
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .header-content h1 {
-            font-size: 2.5em;
-            margin: 0;
-            color: var(--text-color);
-            text-align: center;
-        }
-
-        .header-content p {
-            font-size: 1.2em;
-            color: var(--text-muted-color);
-            margin: 5px 0 15px;
-            text-align: center;
-        }
-
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .contact-info a {
-            color: var(--text-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 0.9em;
-            transition: color 0.3s ease;
-        }
-
-        .contact-info a:hover {
-            color: var(--accent-color);
-        }
-
-        .contact-info i {
-            margin-right: 8px;
-            color: var(--icon-color);
-            transition: color 0.3s ease;
-        }
-
-        .contact-info a:hover i {
-            color: var(--accent-color);
-        }
-
-        .toggle-btn {
-            position: absolute;
             top: 20px;
-            left: var(--sidebar-width-expanded);
-            width: 40px;
-            height: 40px;
-            background-color: var(--sidebar-bg);
-            border-radius: 50%;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: left 0.3s ease, transform 0.3s ease;
+            left: 20px;
             z-index: 101;
-            transform: translateX(-50%);
-        }
-
-        .sidebar-collapsed .toggle-btn {
-            left: var(--sidebar-width-collapsed);
-            transform: translateX(-50%) rotate(180deg);
-        }
-        
-        /* Chatbot toggle button */
-        #chat-toggle-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--accent-color);
-            color: #ffffff;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
             justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 102;
-            transition: transform 0.3s ease;
-        }
-
-        #chat-toggle-btn:hover {
-            transform: scale(1.1);
-        }
-
-        /* Chat window */
-        #chat-window {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 350px;
-            height: 450px;
-            background-color: var(--chat-window-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 101;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(20px) scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-            background-color: var(--sidebar-bg);
-        }
-        
-        #chat-window.open {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #chat-header {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 15px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            cursor: move;
         }
-
-        #chat-header i {
-            font-size: 1.2em;
-            cursor: pointer;
+        .mobile-menu-toggle .icon {
+            fill: var(--text-color);
+            width: 24px;
+            height: 24px;
         }
-
-        #chat-box {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
+        .nav-item.mobile-only {
+            display: none;
+        }
+        .nav-item.desktop-only {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: var(--bg-color);
-        }
-        
-        .chat-message {
-            max-width: 85%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            line-height: 1.4;
-            font-size: 0.9em;
-            word-wrap: break-word;
         }
 
-        .user-message {
-            background-color: var(--user-message-bg);
-            color: var(--text-color);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
 
-        .llm-message {
-            background-color: var(--llm-message-bg);
-            color: var(--text-color);
-            align-self: flex-start;
-            border: 1px solid var(--llm-message-border);
-            border-bottom-left-radius: 4px;
-        }
-        
-        .llm-message p {
-            margin: 0;
-        }
-
-        #chat-input-container {
-            padding: 10px;
-            display: flex;
-            background-color: var(--sidebar-bg);
-            border-top: 1px solid var(--border-color);
-        }
-
-        #chat-input-container input {
-            flex-grow: 1;
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            font-family: inherit;
-            font-size: 0.9em;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-
-        #chat-input-container button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
-        }
-
-        #chat-input-container button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Main Content Sections */
-        section {
-            background-color: var(--sidebar-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            font-size: 1.8em;
-            color: var(--text-color);
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        h2::after {
-            content: '';
-            display: block;
-            width: 50px;
-            height: 4px;
-            background-color: var(--ruler-color);
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            z-index: 1;
-        }
-
-        h3 {
-            font-size: 1.4em;
-            margin-top: 0;
-            color: var(--text-color);
-        }
-
-        p {
-            line-height: 1.6;
-        }
-
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        ul li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 10px;
-            color: var(--text-color);
-            line-height: 1.5;
-        }
-
-        ul li::before {
-            content: '•';
-            color: var(--accent-color);
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-            font-size: 1.2em;
-        }
-
-        .job-entry {
-            margin-bottom: 30px;
-        }
-
-        .job-entry .company {
-            font-weight: 500;
-            color: var(--text-muted-color);
-            margin: 5px 0;
-        }
-
-        .job-entry .dates {
-            font-style: italic;
-            color: var(--text-muted-color);
-            margin: 5px 0 15px;
-        }
-
-        /* Skills section */
-        #skills-section .skills-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .skill-item {
-            background-color: var(--bg-color);
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            font-weight: 500;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .skill-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px var(--shadow-color);
-            border-color: var(--accent-color);
-        }
-        
-        /* Language section */
-        #languages-section .language-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .language-item .lang-name {
-            font-weight: 500;
-        }
-
-        .language-item .proficiency-bar {
-            flex-grow: 1;
-            height: 10px;
-            background-color: var(--bg-color);
-            border-radius: 5px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        
-        .proficiency-level {
-            height: 100%;
-            background-color: var(--accent-color);
-            transition: width 0.5s ease-in-out;
-        }
-        
-        /* Responsive design */
-        @media (max-width: 768px) {
-            #main-container {
+        @media (max-width: 992px) {
+            .page-container {
                 flex-direction: column;
             }
-
-            #sidebar {
-                position: relative;
-                width: 100% !important;
-                box-shadow: none;
-                padding: 20px;
-                order: -1;
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                width: var(--sidebar-width-expanded); /* Always expanded on mobile when open */
             }
-
-            #content-area {
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar.open .nav-text {
+                opacity: 1;
+            }
+            .main-content {
                 margin-left: 0;
-                padding: 20px;
+                width: 100%;
+                padding-bottom: 80px; /* Space for sticky chat bar */
             }
-
-            .toggle-btn {
+            .sidebar:hover ~ .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            .timeline-container {
                 display: none;
             }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            .content-area {
+                padding: 20px;
+            }
+            .main-header {
+                margin-top: 60px;
+            }
+            .nav-item.mobile-only {
+                display: block;
+            }
+             .nav-item.desktop-only {
+                display: none;
+            }
+            .chat-form-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                z-index: 50;
+                box-shadow: 0 -2px 10px var(--shadow-color);
+            }
         }
-
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="main-container" class="sidebar-expanded">
-        <aside id="sidebar">
-            <div class="toggle-btn" onclick="toggleSidebar()">
-                <i class="fas fa-chevron-left"></i>
-            </div>
-            <img src="https://www.gravatar.com/avatar/6a7e0892c575a7c2e3d30999554a9354?s=200" alt="Lee Laster" class="profile-photo">
-            <div class="header-content">
-                <h1>Lee Laster</h1>
-                <p>Fractional CMO and Business Development Director</p>
-                <div class="contact-info">
-                    <a href="mailto:leelaster@gmail.com"><i class="fas fa-envelope"></i> leelaster@gmail.com</a>
-                    <a href="tel:+972542008855"><i class="fas fa-phone"></i> +972.54.200.88.55</a>
-                    <a href="https://www.linkedin.com/in/leelaster" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                </div>
-            </div>
-            <hr style="width: 100%; border: 0; height: 1px; background-color: var(--border-color); margin: 20px 0;">
-            <div id="additional-info" style="width: 100%;">
-                <section id="languages-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Languages</h3>
-                    <div class="language-item">
-                        <span class="lang-name">Hebrew</span>
-                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 100%;"></div></div>
-                    </div>
-                    <div class="language-item">
-                        <span class="lang-name">English</span>
-                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 100%;"></div></div>
-                    </div>
-                    <div class="language-item">
-                        <span class="lang-name">French</span>
-                        <div class="proficiency-bar"><div class="proficiency-level" style="width: 50%;"></div></div>
-                    </div>
-                </section>
-                <section id="strengths-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Strengths</h3>
-                    <div class="skills-grid">
-                        <div class="skill-item">Autodidact</div>
-                        <div class="skill-item">Team Player</div>
-                        <div class="skill-item">Data Driven</div>
-                        <div class="skill-item">Creativity</div>
-                        <div class="skill-item">Loyalty</div>
-                        <div class="skill-item">Drone Passion</div>
-                    </div>
-                </section>
-                <section id="personal-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Personal</h3>
-                    <p>Father; Pottery and Art; RC flyer & Drone Builder</p>
-                </section>
-                <section id="citizenship-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Citizenship</h3>
-                    <p>European, Israeli</p>
-                </section>
-                <section id="service-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Service</h3>
-                    <p>Israeli Air-Force, Airborne Avionics Expert</p>
-                </section>
-                <section id="education-section" style="padding: 0; box-shadow: none; margin-bottom: 20px;">
-                    <h3>Education</h3>
-                    <ul>
-                        <li><p class="dates">2005</p>Post MBA Executive Studies Global Marketing - The Wharton School (Pen University)</li>
-                        <li><p class="dates">2005</p>MBA (Marketing) - Interdisciplinary Center (IDC), Herzeliya</li>
-                        <li><p class="dates">2001</p>BA in Computer Science - Academic College of Tel-Aviv Yaffo, Tel-Aviv</li>
-                    </ul>
-                </section>
-            </div>
-        </aside>
 
-        <div id="content-area">
-            <section id="professional-summary">
-                <h2>Professional Summary</h2>
-                <p id="overview-content">
-                    Strategic, results-driven B2B Executive with 16+ years of experience in online-centric marketing, sales, and business development. A creative, innovation-driven self-starter and fast learner, skilled at designing and executing full-funnel strategies, fostering strong client relationships, and achieving measurable growth.
-                </p>
-            </section>
-            <section id="experience">
-                <h2>Experience</h2>
-                <div class="job-entry">
-                    <h3>Fractional CMO and Business Development Director</h3>
-                    <p class="company">Quadpole (Tethered Drones)</p>
-                    <p class="dates">'23 - Present</p>
-                    <ul>
-                        <li>Hands-on Marketing funnel execution, leveraging Martech stack and automation tools</li>
-                        <li>Managing Business Development for expansion and product sales</li>
-                        <li>Improving conversion ratios for sales funnel with complete client journey nurturing</li>
+<div class="page-container">
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+    </button>
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li class="nav-item"><a href="#" class="nav-link active-link" data-target="overview-content"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><span class="nav-text">Overview</span></a></li>
+            <li class="nav-item mobile-only"><a href="#" class="nav-link" data-target="full-experience-content"><svg class="icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z"></path></svg><span class="nav-text">Full Experience</span></a></li>
+            <li class="nav-item desktop-only"><a href="#" class="nav-link" data-target="experience-content" id="experience-nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg><span class="nav-text">Experience</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="skills-content"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg><span class="nav-text">Skills</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="education-content"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg><span class="nav-text">Education</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="languages-content"><svg class="icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 8C5.23 6.44 6.76 5.16 8.6 4.44 8 5.55 7.54 6.75 7.22 8H4.26zM2.05 12c.18-1.16.58-2.27 1.14-3.29h2.32c-.05.33-.09.66-.09 1H2.09c.04.1.04.2.04.31-.02.33-.04.66-.08 1zm3.8 0h3.82c.04.33.06.66.06 1s-.02.67-.06 1H5.85c.04-.33.06-.67.06-1s-.02-.67-.06-1zm6.14 8.01c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM15.4 15h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zM16.18 13h2.32c.56 1.02.96 2.13 1.14 3.29h-3.54c.05-.33.09-.66.09-1s-.04-.67-.08-1zm-8.36 0h3.82c-.04.33-.06.66-.06 1s.02.67.06 1H7.82c-.04-.33-.06-.67-.06-1s.02-.67-.06-1z"></path></svg><span class="nav-text">Languages</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="about-content"><svg class="icon" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="nav-text">About</span></a></li>
+            <li class="nav-item"><a href="leelaster_cv_he.html" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 8C5.23 6.44 6.76 5.16 8.6 4.44 8 5.55 7.54 6.75 7.22 8H4.26zM2.05 12c.18-1.16.58-2.27 1.14-3.29h2.32c-.05.33-.09.66-.09 1H2.09c.04.1.04.2.04.31-.02.33-.04.66-.08 1zm3.8 0h3.82c.04.33.06.66.06 1s-.02.67-.06 1H5.85c.04-.33.06-.67.06-1s-.02-.67-.06-1zm6.14 8.01c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM15.4 15h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zM16.18 13h2.32c.56 1.02.96 2.13 1.14 3.29h-3.54c.05-.33.09-.66.09-1s-.04-.67-.08-1zm-8.36 0h3.82c-.04.33-.06.66-.06 1s.02.67.06 1H7.82c-.04-.33-.06-.67-.06-1s.02-.67-.06-1z"></path></svg><span class="nav-text">Hebrew</span></a></li>
+            <li class="nav-item mode-switcher"><a href="#" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69z"></path></svg><span class="nav-text">Mode</span></a><div class="mode-options"><button class="mode-btn" id="light-mode-btn">Light</button><button class="mode-btn" id="dark-mode-btn">Dark</button></div></li>
+        </ul>
+    </nav>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="content-area">
+                <header class="main-header">
+                    <h1>Lee Laster</h1>
+                    <p>Fractional CMO and Business Development Director</p>
+                    <ul class="personal-details">
+                        <li><a href="mailto:leelaster@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg>leelaster@gmail.com</a></li>
+                        <li><a href="tel:+972542008855"><svg class="icon" viewBox="0 0 24 24"><path d="M6.54 5H18c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2h-9.46l-4.71 4.71c-.2.2-.45.29-.7.29-.25 0-.5-.1-.7-.29-.39-.39-.39-1.02 0-1.41L5.63 18H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h1.54zM18 17V7h-1.54L13.71 4.29c-.39-.39-1.02-.39-1.41 0-.2.2-.29.45-.29.7s.1.5.29.7l3.79 3.79H6.54V17H18z"></path></svg>+972.54.200.88.55</a></li>
+                        <li><a href="https://www.linkedin.com/in/leelaster" target="_blank"><svg class="icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-5 16h3v-7h-3v7zm-8 0h3V9H8v10zm-.5-11h4a.5.5 0 0 0 0-1h-4a.5.5 0 0 0 0 1z"></path></svg>LinkedIn</a></li>
                     </ul>
+                </header>
+                <div id="dynamic-content-container">
+                    <section id="overview-content" class="content-section active-section">
+                        <h2>Professional Summary</h2>
+                        <p>
+                            Strategic, results-driven B2B Executive with 16+ years of experience in online-centric marketing, sales, and business development. A creative, innovation-driven self-starter and fast learner, skilled at designing and executing full-funnel strategies, fostering strong client relationships, and achieving measurable growth.
+                        </p>
+                    </section>
+                    <section id="experience-content" class="content-section">
+                        <h2>Experience</h2>
+                        <div class="job-detail-item">
+                            <h3>Fractional CMO and Business Development Director</h3>
+                            <p>Quadpole (Tethered Drones) • '23 - Present</p>
+                            <ul>
+                                <li>Hands-on Marketing funnel execution, leveraging Martech stack and automation tools</li>
+                                <li>Managing Business Development for expansion and product sales</li>
+                                <li>Improving conversion ratios for sales funnel with complete client journey nurturing</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Fractional CMO and Customer Success Director</h3>
+                            <p>KCR (Corporate Recovery) • '20 - Present</p>
+                            <ul>
+                                <li>In charge of Growth Marketing covering content, online presence and full funnel ownership</li>
+                                <li>Customer Success Director, focused on retention; visualization using PowerBI</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Chief Marketing Officer</h3>
+                            <p>AllCloud.io (Global Cloud Solutions) • '17-'20</p>
+                            <ul>
+                                <li>Led B2B SaaS Marketing Strategy and execution, driving brand-to-pipeline leadership</li>
+                                <li>Oversaw merger branding, positioning, GTM plans, and prepared investor-facing briefs</li>
+                                <li>Managed marketing team, Events and Conferences - delivering measurable YoY growth</li>
+                                <li><strong>Notable Achievement:</strong> secured the company's Global Gartner magic-quadrant inclusion 2018</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Business Development Director</h3>
+                            <p>Kueri.me (SaaS DB Interfaces) • '15-'17</p>
+                            <ul>
+                                <li>All-around B2B multi-disciplinary growth manager in a fast-paced start-up environment</li>
+                                <li>Focused on Online presence, Lead generation, and successful contract negotiations</li>
+                                <li><strong>Notable achievement:</strong> Recruited 10 design partners in 2 months, accelerating product validation</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Marketing Director (& Chief Aerial Officer)</h3>
+                            <p>Terrascan LTD (Aerial Drone Mapping) • '13-'15</p>
+                            <ul>
+                                <li>Directed comprehensive online marketing and sales</li>
+                                <li>I hold a CAAI License as a skilled LOS Drone Pilot operator</li>
+                                <li><strong>Notable achievement:</strong> Managed development, production and licensing of Aerial Platforms</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Chief Marketing Officer</h3>
+                            <p>Cortex Medical Technologies (Medical Devices) • '09-'13</p>
+                            <ul>
+                                <li>Conducted B2B2C global Market Research and managed substantial budget (> $1 Million)</li>
+                                <li>Led a marketing team, expanded global client base and improved monthly sales metrics.</li>
+                                <li><strong>Notable achievement:</strong> Located and signed distributor deals responsible for 25% turnover increase</li>
+                            </ul>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Marketing & Sales Director</h3>
+                            <p>Gecko (Presentations, Digital Media & Content) • '04-'09</p>
+                            <ul>
+                                <li>Founded and managed a thriving investors' presentations agency; Team of 20+ employees</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="full-experience-content" class="content-section experience-accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Fractional CMO and Business Development Director • '23 - Present</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> Quadpole (Tethered Drones)</p>
+                                <ul>
+                                    <li>Hands-on Marketing funnel execution, leveraging Martech stack and automation tools</li>
+                                    <li>Managing Business Development for expansion and product sales</li>
+                                    <li>Improving conversion ratios for sales funnel with complete client journey nurturing</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Fractional CMO and Customer Success Director • '20 - Present</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> KCR (Corporate Recovery)</p>
+                                <ul>
+                                    <li>In charge of Growth Marketing covering content, online presence and full funnel ownership</li>
+                                    <li>Customer Success Director, focused on retention; visualization using PowerBI</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Chief Marketing Officer • '17-'20</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> AllCloud.io (Global Cloud Solutions)</p>
+                                <ul>
+                                    <li>Led B2B SaaS Marketing Strategy and execution, driving brand-to-pipeline leadership</li>
+                                    <li>Oversaw merger branding, positioning, GTM plans, and prepared investor-facing briefs</li>
+                                    <li>Managed marketing team, Events and Conferences - delivering measurable YoY growth</li>
+                                    <li><strong>Notable Achievement:</strong> secured the company's Global Gartner magic-quadrant inclusion 2018</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Business Development Director • '15-'17</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> Kueri.me (SaaS DB Interfaces)</p>
+                                <ul>
+                                    <li>All-around B2B multi-disciplinary growth manager in a fast-paced start-up environment</li>
+                                    <li>Focused on Online presence, Lead generation, and successful contract negotiations</li>
+                                    <li><strong>Notable achievement:</strong> Recruited 10 design partners in 2 months, accelerating product validation</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Marketing Director (& Chief Aerial Officer) • '13-'15</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> Terrascan LTD (Aerial Drone Mapping)</p>
+                                <ul>
+                                    <li>Directed comprehensive online marketing and sales</li>
+                                    <li>I hold a CAAI License as a skilled LOS Drone Pilot operator</li>
+                                    <li><strong>Notable achievement:</strong> Managed development, production and licensing of Aerial Platforms</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Chief Marketing Officer • '09-'13</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> Cortex Medical Technologies (Medical Devices)</p>
+                                <ul>
+                                    <li>Conducted B2B2C global Market Research and managed substantial budget (> $1 Million)</li>
+                                    <li>Led a marketing team, expanded global client base and improved monthly sales metrics.</li>
+                                    <li><strong>Notable achievement:</strong> Located and signed distributor deals responsible for 25% turnover increase</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <svg class="arrow icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                                <h3>Marketing & Sales Director • '04-'09</h3>
+                            </div>
+                            <div class="accordion-details">
+                                <p><strong>Company:</strong> Gecko (Presentations, Digital Media & Content)</p>
+                                <ul>
+                                    <li>Founded and managed a thriving investors' presentations agency; Team of 20+ employees</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="skills-content" class="content-section">
+                        <h2>Strengths & Skills</h2>
+                        <div class="skills-grid">
+                            <div class="skill-category">
+                                <h3>Strengths</h3>
+                                <ul>
+                                    <li>Autodidact</li>
+                                    <li>Team Player</li>
+                                    <li>Data Driven</li>
+                                    <li>Creativity</li>
+                                    <li>Loyalty</li>
+                                    <li>Drone Passion</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="education-content" class="content-section">
+                        <h2>Education</h2>
+                        <div class="education-item">
+                            <h3>Post MBA Executive Studies Global Marketing - The Wharton School (Pen University)</h3>
+                            <p>2005</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>MBA (Marketing) - Interdisciplinary Center (IDC), Herzeliya</h3>
+                            <p>2005</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>BA in Computer Science - Academic College of Tel-Aviv Yaffo, Tel-Aviv</h3>
+                            <p>2001</p>
+                        </div>
+                    </section>
+                    <section id="languages-content" class="content-section">
+                        <h2>Languages</h2>
+                        <div class="education-item">
+                            <h3>Hebrew</h3>
+                            <p>Native / Fluent</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>English</h3>
+                            <p>Native / Fluent</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>French</h3>
+                            <p>Limited Working Proficiency</p>
+                        </div>
+                    </section>
+                    <section id="about-content" class="content-section">
+                        <h2>About Me</h2>
+                        <div class="job-detail-item">
+                            <h3>Personal</h3>
+                            <p>Father; Pottery and Art; RC flyer & Drone Builder</p>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Citizenship</h3>
+                            <p>European, Israeli</p>
+                        </div>
+                        <div class="job-detail-item">
+                            <h3>Service</h3>
+                            <p>Israeli Air-Force, Airborne Avionics Expert</p>
+                        </div>
+                    </section>
+                    <section id="ai-chat-content" class="content-section">
+                        <h2>CV-GPT</h2>
+                        <div class="chat-window" id="chat-window">
+                            <div class="chat-message bot-message">
+                                <div class="message-bubble">
+                                    Hi there! I'm an AI assistant for Lee Laster's CV. Ask me anything about his experience or background.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-form-container">
+                            <form id="chat-form" class="chat-form">
+                                <textarea id="chat-input" placeholder="Ask a question..." rows="1" disabled></textarea>
+                                <button type="submit" id="send-btn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg></button>
+                            </form>
+                            <div class="typing-indicator" style="display: none;">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-                <div class="job-entry">
-                    <h3>Fractional CMO and Customer Success Director</h3>
-                    <p class="company">KCR (Corporate Recovery)</p>
-                    <p class="dates">'20 - Present</p>
-                    <ul>
-                        <li>In charge of Growth Marketing covering content, online presence and full funnel ownership</li>
-                        <li>Customer Success Director, focused on retention; visualization using PowerBI</li>
-                    </ul>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-ruler"></div>
+                <div class="timeline-event" data-target="overview-content" data-year="2024" data-title="Professional Summary" data-subtitle="My most recent work and skills">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg></div>
                 </div>
-                <div class="job-entry">
-                    <h3>Chief Marketing Officer</h3>
-                    <p class="company">AllCloud.io (Global Cloud Solutions)</p>
-                    <p class="dates">'17-'20</p>
-                    <ul>
-                        <li>Led B2B SaaS Marketing Strategy and execution, driving brand-to-pipeline leadership</li>
-                        <li>Oversaw merger branding, positioning, GTM plans, and prepared investor-facing briefs</li>
-                        <li>Managed marketing team, Events and Conferences - delivering measurable YoY growth</li>
-                        <li>Notable Achievement: secured the company's Global Gartner magic-quadrant inclusion 2018</li>
-                    </ul>
+                <div class="timeline-event" data-target="experience-content" data-year="2023" data-title="Quadpole" data-subtitle="Fractional CMO and Business Development Director">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
                 </div>
-                <div class="job-entry">
-                    <h3>Business Development Director</h3>
-                    <p class="company">Kueri.me (SaaS DB Interfaces)</p>
-                    <p class="dates">'15-'17</p>
-                    <ul>
-                        <li>All-around B2B multi-disciplinary growth manager in a fast-paced start-up environment</li>
-                        <li>Focused on Online presence, Lead generation, and successful contract negotiations</li>
-                        <li>Notable achievement: Recruited 10 design partners in 2 months, accelerating product validation</li>
-                    </ul>
+                <div class="timeline-event" data-target="experience-content" data-year="2020" data-title="KCR" data-subtitle="Fractional CMO and Customer Success Director">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
                 </div>
-                <div class="job-entry">
-                    <h3>Marketing Director (& Chief Aerial Officer)</h3>
-                    <p class="company">Terrascan LTD (Aerial Drone Mapping)</p>
-                    <p class="dates">'13-'15</p>
-                    <ul>
-                        <li>Directed comprehensive online marketing and sales</li>
-                        <li>I hold a CAAI License as a skilled LOS Drone Pilot operator</li>
-                        <li>Notable achievement: Managed development, production and licensing of Aerial Platforms</li>
-                    </ul>
+                <div class="timeline-event" data-target="experience-content" data-year="2017" data-title="AllCloud.io" data-subtitle="Chief Marketing Officer">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
                 </div>
-                <div class="job-entry">
-                    <h3>Chief Marketing Officer</h3>
-                    <p class="company">Cortex Medical Technologies (Medical Devices)</p>
-                    <p class="dates">'09-'13</p>
-                    <ul>
-                        <li>Conducted B2B2C global Market Research and managed substantial budget (> $1 Million)</li>
-                        <li>Led a marketing team, expanded global client base and improved monthly sales metrics.</li>
-                        <li>Notable achievement: Located and signed distributor deals responsible for 25% turnover increase</li>
-                    </ul>
+                <div class="timeline-event" data-target="experience-content" data-year="2015" data-title="Kueri.me" data-subtitle="Business Development Director">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
                 </div>
-                <div class="job-entry">
-                    <h3>Marketing & Sales Director</h3>
-                    <p class="company">Gecko (Presentations, Digital Media & Content)</p>
-                    <p class="dates">'04-'09</p>
-                    <ul>
-                        <li>Founded and managed a thriving investors' presentations agency; Team of 20+ employees</li>
-                    </ul>
+                <div class="timeline-event" data-target="experience-content" data-year="2013" data-title="Terrascan LTD" data-subtitle="Marketing Director">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
                 </div>
-            </section>
+                <div class="timeline-event" data-target="experience-content" data-year="2009" data-title="Cortex Medical" data-subtitle="Chief Marketing Officer">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="experience-content" data-year="2004" data-title="Gecko" data-subtitle="Marketing & Sales Director">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="education-content" data-year="2005" data-title="MBA" data-subtitle="IDC, Herzeliya">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="education-content" data-year="2001" data-title="BA" data-subtitle="Academic College of Tel-Aviv">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="skills-content" data-year="Strengths" data-title="Strengths" data-subtitle="My core abilities">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="languages-content" data-year="Languages" data-title="Languages" data-subtitle="Speaking, reading, writing">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 8C5.23 6.44 6.76 5.16 8.6 4.44 8 5.55 7.54 6.75 7.22 8H4.26zM2.05 12c.18-1.16.58-2.27 1.14-3.29h2.32c-.05.33-.09.66-.09 1H2.09c.04.1.04.2.04.31-.02.33-.04.66-.08 1zm3.8 0h3.82c.04.33.06.66.06 1s-.02.67-.06 1H5.85c.04-.33.06-.67.06-1s-.02-.67-.06-1zm6.14 8.01c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM15.4 15h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zM16.18 13h2.32c.56 1.02.96 2.13 1.14 3.29h-3.54c.05-.33.09-.66.09-1s-.04-.67-.08-1zm-8.36 0h3.82c-.04.33-.06.66-.06 1s.02.67.06 1H7.82c-.04-.33-.06-.67-.06-1s.02-.67-.06-1z"></path></svg></div>
+                </div>
+                <div class="timeline-event" data-target="about-content" data-year="About Me" data-title="About Me" data-subtitle="Personal background">
+                    <div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></div>
+                </div>
+            </div>
         </div>
-        
-        <div id="chat-toggle-btn">
-            <i class="fas fa-comment-dots"></i>
-        </div>
-        
-        <div id="chat-window">
-            <div id="chat-header">
-                <span>Talk with Lee's CV</span>
-                <i class="fas fa-times" id="chat-close-btn"></i>
-            </div>
-            <div id="chat-box">
-                <div class="chat-message llm-message">
-                    <p>Hello! I'm an AI assistant for Lee Laster's CV. Ask me anything about his experience, skills, or professional background.</p>
-                </div>
-            </div>
-            <div id="chat-input-container">
-                <input type="text" id="chat-input" placeholder="Type your message here..." disabled>
-                <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+    </main>
+</div>
+<script>
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const timelineEvents = document.querySelectorAll('.timeline-event');
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const chatInput = document.getElementById('chat-input');
+    const chatForm = document.getElementById('chat-form');
+    const chatWindow = document.getElementById('chat-window');
+    const typingIndicator = document.querySelector('.typing-indicator');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const toggleBtn = document.querySelector('.toggle-btn');
-            const mainContainer = document.getElementById('main-container');
+    // Initial state
+    let activeTarget = 'overview-content';
+    let isMobile = window.innerWidth <= 992;
+    const isRtl = document.dir === 'rtl';
 
-            toggleBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                mainContainer.classList.toggle('sidebar-collapsed');
-            });
-
-            // Chatbot functionality
-            const chatToggleBtn = document.getElementById('chat-toggle-btn');
-            const chatWindow = document.getElementById('chat-window');
-            const chatCloseBtn = document.getElementById('chat-close-btn');
-            const chatBox = document.getElementById('chat-box');
-            const chatInput = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-btn');
-            
-            chatToggleBtn.addEventListener('click', () => {
-                chatWindow.classList.toggle('open');
-            });
-
-            chatCloseBtn.addEventListener('click', () => {
-                chatWindow.classList.remove('open');
-            });
-            
-            // Make chat window draggable
-            let isDragging = false;
-            let currentX;
-            let currentY;
-            let initialX;
-            let initialY;
-            let xOffset = 0;
-            let yOffset = 0;
-            const chatHeader = document.getElementById('chat-header');
-            
-            chatHeader.addEventListener('mousedown', dragStart);
-            chatWindow.addEventListener('mouseup', dragEnd);
-            chatWindow.addEventListener('mousemove', drag);
-            
-            function dragStart(e) {
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-
-                if (e.target === chatHeader) {
-                    isDragging = true;
-                }
-            }
-
-            function dragEnd(e) {
-                initialX = currentX;
-                initialY = currentY;
-
-                isDragging = false;
-            }
-
-            function drag(e) {
-                if (isDragging) {
-                    e.preventDefault();
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-
-                    xOffset = currentX;
-                    yOffset = currentY;
-
-                    setTranslate(currentX, currentY, chatWindow);
-                }
-            }
-
-            function setTranslate(xPos, yPos, el) {
-                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-            }
-
-            // LLM Integration for chat
-            const apiUrl = 'YOUR_API_ENDPOINT_HERE'; 
-            const apiKey = 'YOUR_API_KEY_HERE';
-
-            sendBtn.addEventListener('click', handleUserMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleUserMessage();
+    // Set initial active states based on URL hash
+    function setActiveContentFromHash() {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            navLinks.forEach(link => {
+                if (link.getAttribute('data-target') === hash) {
+                    navLinks.forEach(nl => nl.classList.remove('active-link'));
+                    link.classList.add('active-link');
+                    activeTarget = hash;
                 }
             });
-
-            async function handleUserMessage() {
-                const messageText = chatInput.value.trim();
-                if (messageText === "") return;
-
-                const userMessageDiv = document.createElement('div');
-                userMessageDiv.classList.add('chat-message', 'user-message');
-                userMessageDiv.textContent = messageText;
-                chatBox.appendChild(userMessageDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
-
-                chatInput.value = '';
-                chatInput.disabled = true;
-                sendBtn.disabled = true;
-                
-                try {
-                    const llmResponse = await generateLLMResponse(messageText);
-                    displayLLMResponse(llmResponse);
-                } catch (error) {
-                    console.error("LLM API Error:", error);
-                    displayLLMResponse("I'm sorry, I couldn't process that request right now. Please try again later.");
-                } finally {
-                    chatInput.disabled = false;
-                    sendBtn.disabled = false;
-                    chatInput.focus();
+            contentSections.forEach(section => {
+                section.classList.remove('active-section');
+                if (section.id === hash) {
+                    section.classList.add('active-section');
                 }
-            }
-            
-            function displayLLMResponse(text) {
-                const llmMessageDiv = document.createElement('div');
-                llmMessageDiv.classList.add('chat-message', 'llm-message');
-                llmMessageDiv.innerHTML = marked.parse(text);
-                chatBox.appendChild(llmMessageDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-
-            async function generateLLMResponse(userMessage) {
-                const systemPrompt = `You are an AI assistant for Lee Laster's resume. Your role is to answer questions based *only* on the provided resume content.
-                    Do not invent or add information not explicitly present in the resume. If a question cannot be answered from the resume, politely state that the information is not available.
-                    The resume content is as follows:
-                    
-                    ${getResumeText()}
-
-                    Based on this, answer the following question: "${userMessage}"`;
-                
-                const payload = {
-                    contents: [{
-                        role: 'user',
-                        parts: [{ text: systemPrompt }]
-                    }]
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
+            });
+            timelineEvents.forEach(event => {
+                event.classList.remove('active-event');
+                if (event.getAttribute('data-target') === hash) {
+                    event.classList.add('active-event');
                 }
+            });
+        }
+    }
 
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                   return "I couldn't generate a response. Please try again.";
+    // Handle navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (e.target.closest('a').getAttribute('href') === '#') {
+                e.preventDefault();
+                const targetId = e.target.closest('a').getAttribute('data-target');
+                setActiveContent(targetId);
+                // Update URL hash for sharing
+                history.pushState(null, '', `#${targetId}`);
+                if (isMobile) {
+                    sidebar.classList.remove('open');
                 }
-            }
-            
-            function getResumeText() {
-                let resumeContext = `Professional Summary: ${document.querySelector('#overview-content').textContent.trim()}\n`;
-                resumeContext += `Skills: ${Array.from(document.querySelectorAll('#strengths-section .skill-item')).map(el => el.textContent.trim()).join(', ')}\n`;
-                
-                const experienceEntries = document.querySelectorAll('#experience .job-entry');
-                let experienceDetails = "";
-                experienceEntries.forEach(job => {
-                     const title = job.querySelector('h3').textContent.trim();
-                     const company = job.querySelector('.company').textContent.trim();
-                     const details = Array.from(job.querySelectorAll('ul li')).map(li => li.textContent.trim());
-                     experienceDetails += `- ${title} at ${company}: ${details.join(', ')}\n`;
-                });
-                resumeContext += `Experience: ${experienceDetails}\n`;
-                
-                const educationEntries = document.querySelectorAll('#education-section ul li');
-                let educationDetails = "";
-                educationEntries.forEach(edu => {
-                    educationDetails += `- ${edu.textContent.trim()}\n`;
-                });
-                resumeContext += `Education: ${educationDetails}\n`;
-                
-                resumeContext += `Service: ${document.querySelector('#service-section p').textContent.trim()}\n`;
-                resumeContext += `Citizenship: ${document.querySelector('#citizenship-section p').textContent.trim()}\n`;
-                resumeContext += `Languages: ${Array.from(document.querySelectorAll('#languages-section .lang-name')).map(el => el.textContent.trim()).join(', ')}\n`;
-                resumeContext += `Personal: ${document.querySelector('#personal-section p').textContent.trim()}\n`;
-                
-                return resumeContext;
             }
         });
-    </script>
-</body>
-</html>
+    });
+
+    timelineEvents.forEach(event => {
+        event.addEventListener('click', () => {
+            const targetId = event.getAttribute('data-target');
+            setActiveContent(targetId);
+            history.pushState(null, '', `#${targetId}`);
+        });
+    });
+
+    function setActiveContent(targetId) {
+        // Deactivate all
+        navLinks.forEach(link => link.classList.remove('active-link'));
+        contentSections.forEach(section => section.classList.remove('active-section'));
+        timelineEvents.forEach(event => event.classList.remove('active-event'));
+
+        // Activate selected
+        const activeLink = document.querySelector(`[data-target="${targetId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active-link');
+        }
+        document.getElementById(targetId).classList.add('active-section');
+        const activeTimelineEvent = document.querySelector(`.timeline-event[data-target="${targetId}"]`);
+        if (activeTimelineEvent) {
+            activeTimelineEvent.classList.add('active-event');
+        }
+    }
+
+    // Toggle mobile menu
+    mobileMenuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    // Dark/Light mode toggle
+    const lightModeBtn = document.getElementById('light-mode-btn');
+    const darkmodeBtn = document.getElementById('dark-mode-btn');
+    const body = document.body;
+
+    function setMode(mode) {
+        if (mode === 'dark') {
+            body.classList.add('dark-mode');
+            localStorage.setItem('mode', 'dark');
+            darkmodeBtn.classList.add('active');
+            lightModeBtn.classList.remove('active');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('mode', 'light');
+            lightModeBtn.classList.add('active');
+            darkmodeBtn.classList.remove('active');
+        }
+    }
+
+    lightModeBtn.addEventListener('click', () => setMode('light'));
+    darkmodeBtn.addEventListener('click', () => setMode('dark'));
+
+    // Apply saved mode on load
+    const savedMode = localStorage.getItem('mode') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setMode(savedMode);
+
+    // Initial content load
+    setActiveContentFromHash();
+    if (!window.location.hash) {
+        setActiveContent('overview-content');
+    }
+
+    // Accordion for mobile
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    accordionItems.forEach(item => {
+        item.querySelector('.accordion-header').addEventListener('click', () => {
+            item.classList.toggle('active');
+        });
+    });
+    
+    // AI Chat functionality (dummy version)
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+        
+        // Disable input and show typing indicator
+        chatInput.value = '';
+        chatInput.disabled = true;
+        typingIndicator.style.display = 'block';
+
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.classList.add('chat-message', 'user-message');
+        userMessageDiv.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
+        chatWindow.appendChild(userMessageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        try {
+            // Simulate API call
