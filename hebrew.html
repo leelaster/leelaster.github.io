@@ -292,7 +292,10 @@
         #chat-input { flex-grow: 1; border: 2px solid var(--ruler-color); padding: 12px 15px; border-radius: 20px; background-color: var(--bg-color); color: var(--text-color); font-size: 1em; transition: all 0.3s ease; resize: none; }
         #chat-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); border-color: var(--accent-color); }
         #chat-input::placeholder { color: var( --accent-color ); font-weight: bold; font-size: 1em; opacity: 0.8; }
-        #send-btn { background: none; border: none; cursor: pointer; padding: 0 15px; align-self: center; fill: var(--accent-color); }
+        #send-btn { background: none; border: none; cursor: pointer; padding: 0 15px; align-self: center; }
+        #send-btn svg, #send-btn path {
+            fill: currentColor;
+        }
 
         /* --- Mobile Responsiveness --- */
         .mobile-menu-toggle {
