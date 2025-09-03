@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Lee Laster - Dynamic CV</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Favicon Link -->
+       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+        :root {
+            --sidebar-width-collapsed: 80px;
+            --sidebar-width-expanded: 220px;
+
+            /* Light Theme (Default) */
+            --bg-color: #f7f9fc;
+            --sidebar-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted-color: #777777;
+            --icon-color: #555555;
+            --accent-color: #007bff;
+            --border-color: #eeeeee;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --ruler-color: #CFD8DC;
+            --marker-color: #607D8B;
+            --tooltip-bg: #ffffff;
+            --chat-window-bg: transparent;
+            --user-bubble-bg: #dcf8c6;
+            --bot-bubble-bg: #ffffff;
+        }
+
+        body.dark-mode {
+            /* Dark Theme */
+            --bg-color: #1a1a1a;
+            --sidebar-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted-color: #a0a0a0;
+            --icon-color: #bbbbbb;
+            --accent-color: #03a9f4;
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --ruler-color: #444;
+            --marker-color: #999;
+            --tooltip-bg: #2c2c2c;
+            --chat-window-bg: transparent;
+            --user-bubble-bg: #056162;
+            --bot-bubble-bg: #2c2c2c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .page-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            width: 100%;
+            display: flex;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar { width: var(--sidebar-width-collapsed); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); padding: 20px 0; display: flex; flex-direction: column; align-items: center; transition: width 0.3s ease, background-color 0.3s ease, transform 0.3s ease-in-out; overflow-x: hidden; box-shadow: 4px 0 15px var(--shadow-color); z-index: 100; }
+        .sidebar:hover { width: var(--sidebar-width-expanded); }
+        .sidebar-nav { list-style: none; width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .nav-item { margin-bottom: 10px; }
+        .nav-link { display: flex; align-items: center; padding: 12px 25px; color: var(--icon-color); text-decoration: none; white-space: nowrap; border-left: 3px solid transparent; }
+        .nav-link:hover { background-color: var(--bg-color); color: var(--accent-color); }
+        .nav-link.active-link { color: var(--accent-color); border-left-color: var(--accent-color); }
+        .nav-link .icon { width: 24px; height: 24px; min-width: 24px; fill: currentColor; transition: fill 0.2s ease; }
+        .nav-text { margin-left: 20px; opacity: 0; transition: opacity 0.2s ease; font-weight: 500; }
+        .sidebar:hover .nav-text, .sidebar.open .nav-text { opacity: 1; transition-delay: 0.1s; }
+        .mode-switcher { margin-top: auto; }
+        .mode-options { display: flex; align-items: center; justify-content: flex-start; margin-left: 20px; opacity: 0; transition: opacity 0.2s ease; height: 0; overflow: hidden; }
+        .sidebar:hover .mode-options { opacity: 1; height: auto; transition-delay: 0.1s; }
+        .mode-btn { background: none; border: 1px solid var(--border-color); color: var(--text-muted-color); padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; }
+        .mode-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .mode-btn.active { background-color: var(--accent-color); color: var(--sidebar-bg); border-color: var(--accent-color); }
+
+        /* --- Main Content Area --- */
+        .main-content { margin-left: var(--sidebar-width-collapsed); width: calc(100% - var(--sidebar-width-collapsed)); display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s ease, width 0.3s ease; }
+        .sidebar:hover ~ .main-content { margin-left: var(--sidebar-width-expanded); width: calc(100% - var(--sidebar-width-expanded)); }
+        
+        .content-wrapper { display: flex; flex-grow: 1; position: relative; }
+        
+        .content-area { flex-grow: 1; padding: 20px 40px; display: flex; flex-direction: column; }
+        
+        .main-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .main-header h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 5px; }
+        .main-header p { font-size: 1.1em; color: var(--text-muted-color); }
+        
+        #dynamic-content-container { flex-grow: 1; position: relative; }
+        #dynamic-content-container.chat-mode .content-section:not(#ai-chat-content) { display: none; }
+        #dynamic-content-container.chat-mode #ai-chat-content { display: flex; }
+
+        /* --- Dynamic Content Styling --- */
+        .personal-details { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 30px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .personal-details li { display: flex; align-items: center; }
+        .personal-details a { color: var(--text-color); text-decoration: none; display: flex; align-items: center; }
+        .personal-details a:hover { color: var(--accent-color); }
+        .personal-details .icon { width: 18px; height: 18px; fill: var(--text-muted-color); margin-right: 8px; transition: fill 0.2s ease; }
+        .personal-details a:hover .icon { fill: var(--accent-color); }
+
+        .content-section { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .content-section.active-section { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .content-section h2 { font-size: 1.8em; margin-bottom: 20px; color: var(--accent-color); }
+        .content-section p { line-height: 1.8; margin-bottom: 15px; }
+        
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .skill-category h3 { margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; }
+        .skill-category ul { list-style: none; padding: 0; }
+        .skill-category li { margin-bottom: 4px; padding-left: 20px; position: relative; }
+        .skill-category li::before { content: '✓'; position: absolute; left: 0; color: var(--accent-color); }
+        .skill-category.full-width { grid-column: 1 / -1; }
+        #business-skills-list { column-count: 2; column-gap: 40px; }
+
+        .education-item, .job-detail-item { margin-bottom: 20px; padding-left: 20px; border-left: 3px solid var(--accent-color); }
+        .education-item h3, .job-detail-item h3 { margin: 0; }
+        .education-item p, .job-detail-item p { margin: 5px 0 0 0; color: var(--text-muted-color); }
+        .job-detail-item ul { list-style: none; padding: 10px 0 0 0; }
+        .job-detail-item li { margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .job-detail-item li::before { content: '•'; position: absolute; left: 0; color: var(--accent-color); }
+        .job-detail-item li strong { font-weight: 500; }
+        
+        /* --- Accordion for Mobile Experience --- */
+        .experience-accordion .accordion-item { border-bottom: 1px solid var(--border-color); }
+        .accordion-header { display: flex; align-items: center; cursor: pointer; padding: 15px 5px; }
+        .accordion-header h3 { font-size: 1.0em; margin: 0; font-weight: 500;}
+        .accordion-header .arrow { transition: transform 0.3s ease; margin-right: 10px;}
+        .accordion-item.active .accordion-header .arrow { transform: rotate(90deg); }
+        .accordion-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; padding-left: 25px; }
+        .accordion-item.active .accordion-details { max-height: 1000px; padding-top: 10px; padding-bottom: 15px; }
+
+
+        /* --- Timeline (Right side) --- */
+        .timeline-container { min-width: 250px; max-width: 250px; padding: 20px 0 20px 20px; position: relative; }
+        .timeline-ruler { position: absolute; top: 0; bottom: 0; right: 40px; width: 4px; background-color: var(--ruler-color); border-radius: 2px; }
+        .timeline-event { position: relative; padding: 15px 0; margin-top: 10px; height: 50px; cursor: pointer;}
+        
+        .timeline-marker { position: absolute; top: 50%; right: 42px; transform: translate(50%, -50%); width: 32px; height: 32px; background-color: var(--bg-color); border: 3px solid var(--ruler-color); border-radius: 50%; z-index: 2; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
+        .timeline-marker .icon { width: 18px; height: 18px; fill: var(--marker-color); }
+        .timeline-event:hover .timeline-marker, .timeline-event.active-event .timeline-marker { border-color: var(--accent-color); transform: translate(50%, -50%) scale(1.1); }
+        .timeline-event:hover .icon, .timeline-event.active-event .icon { fill: var(--accent-color); }
+        .timeline-year { position: absolute; top: 50%; right: 80px; transform: translateY(-50%); font-weight: 700; color: var(--marker-color); }
+        .tooltip { visibility: hidden; opacity: 0; position: absolute; top: 50%; right: 125px; transform: translateY(-50%) scale(0.95); background-color: var(--tooltip-bg); padding: 15px; border-radius: 8px; box-shadow: 0 10px 30px var(--shadow-color); width: 240px; z-index: 10; transition: all 0.3s ease-in-out; border: 1px solid var(--border-color); }
+        .tooltip::after { content: ''; position: absolute; top: 50%; left: 100%; transform: translateY(-50%); border-width: 8px; border-style: solid; border-color: transparent transparent transparent var(--tooltip-bg); }
+        .timeline-event:hover .tooltip { visibility: visible; opacity: 1; transform: translateY(-50%) scale(1); }
+        
+        .timeline-event:first-child .tooltip { top: 0; transform: translateY(0) scale(0.95); }
+        .timeline-event:first-child:hover .tooltip { transform: translateY(0) scale(1); }
+        .timeline-event:first-child .tooltip::after { top: 15px; }
+
+        .tooltip h3 { margin: 0; font-size: 1em; color: var(--text-color); }
+        .tooltip h4 { margin: 0; font-size: 0.8em; color: var(--text-muted-color); }
+
+        /* --- Chat --- */
+        #ai-chat-content { height: 100%; flex-direction: column; background: var(--chat-window-bg); border-radius: 8px; overflow: hidden; }
+        .chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; max-height: calc(100vh - 250px); }
+        .chat-message { display: flex; margin-bottom: 15px; max-width: 80%; }
+        .user-message { margin-left: auto; flex-direction: row-reverse; }
+        .bot-message { margin-right: auto; }
+        .message-bubble { padding: 10px 15px; border-radius: 18px; line-height: 1.5; }
+        .message-bubble ul, .message-bubble ol { margin: 10px 0 10px 20px; padding: 0;}
+        .message-bubble li { margin-bottom: 5px; }
+        .user-message .message-bubble { background-color: var(--user-bubble-bg); border-bottom-right-radius: 4px; color: #111; }
+        .bot-message .message-bubble { background-color: var(--bot-bubble-bg); border-bottom-left-radius: 4px; }
+        .typing-indicator span { height: 8px; width: 8px; margin: 0 2px; background-color: var(--text-muted-color); border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        
+        .chat-form-container { border-top: 1px solid var(--border-color); background-color: var(--bg-color); padding: 15px 20px; display: flex; flex-direction: column; transition: background-color 0.3s ease; }
+        .chat-form { display: flex; }
+        #chat-input { flex-grow: 1; border: 2px solid var(--ruler-color); padding: 12px 15px; border-radius: 20px; background-color: var(--bg-color); color: var(--text-color); font-size: 1em; transition: all 0.3s ease; resize: none; }
+        #chat-input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent-color); border-color: var(--accent-color); }
+        #chat-input::placeholder { color: var( --accent-color ); font-weight: bold; font-size: 1em; opacity: 0.8; }
+        #send-btn { background: none; border: none; cursor: pointer; padding: 0 15px; align-self: center; color: var(--accent-color);}
+
+#send-btn svg,
+#send-btn path {
+  fill: currentColor;
+}
+
+        /* --- Mobile Responsiveness --- */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+        }
+        .mobile-menu-toggle .icon {
+            fill: var(--text-color);
+            width: 24px;
+            height: 24px;
+        }
+        .nav-item.mobile-only {
+            display: none;
+        }
+        .nav-item.desktop-only {
+            display: flex;
+        }
+
+
+        @media (max-width: 992px) {
+            .page-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                width: var(--sidebar-width-expanded); /* Always expanded on mobile when open */
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar.open .nav-text {
+                opacity: 1;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-bottom: 80px; /* Space for sticky chat bar */
+            }
+            .sidebar:hover ~ .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            .timeline-container {
+                display: none;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            .content-area {
+                padding: 20px;
+            }
+            .main-header {
+                margin-top: 60px;
+            }
+            .nav-item.mobile-only {
+                display: block;
+            }
+             .nav-item.desktop-only {
+                display: none;
+            }
+            .chat-form-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                z-index: 50;
+                box-shadow: 0 -2px 10px var(--shadow-color);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+    </button>
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li class="nav-item"><a href="#" class="nav-link active-link" data-target="overview-content"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><span class="nav-text">Overview</span></a></li>
+            <li class="nav-item mobile-only"><a href="#" class="nav-link" data-target="full-experience-content"><svg class="icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z"></path></svg><span class="nav-text">Full Experience</span></a></li>
+            <li class="nav-item desktop-only"><a href="#" class="nav-link" data-target="experience-content" id="experience-nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg><span class="nav-text">Experience</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="skills-content"><svg class="icon" viewBox="0 0 24 24"><path d="m20.56,3.17c-.29-.2-.67-.23-.99-.08L2.57,11.1c-.35.17-.58.53-.57.92s.24.75.6.9l5.4,2.36v6.72l5.84-4.17,4.76,2.08c.13.06.26.08.4.08.18,0,.36-.05.52-.15.28-.17.46-.46.48-.79l1-15c.02-.35-.14-.69-.43-.89Zm-2.47,14.34l-5.21-2.28,3.12-6.23-7.65,4.25-2.93-1.28,13.47-6.34-.79,11.89Z"/>
+</path></svg><span class="nav-text">Skills</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="education-content"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg><span class="nav-text">Education</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="languages-content"><svg class="icon" viewBox="0 0 24 24"><path d="M9 2a8.002 8.002 0 0 1 7.934 6.965l2.25 3.539c.148.233.118.58-.225.728L17 14.07V17a2 2 0 0 1-2 2h-1.999L13 22H4v-3.694c0-1.18-.436-2.297-1.244-3.305A8 8 0 0 1 9 2Zm12.154 16.102l-1.665-1.11A8.959 8.959 0 0 0 21 12a8.958 8.958 0 0 0-1.51-4.993l1.664-1.11A10.948 10.948 0 0 1 23 12c0 2.258-.68 4.356-1.846 6.102Z"></path></svg><span class="nav-text">Languages</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-target="about-content"><svg class="icon" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="nav-text">About</span></a></li>
+            <li class="nav-item"><a href="hebrew.html" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M3.9 4L9 10.03a3.444 3.444 0 0 0-3 2.56L4 20h2.07l1.85-6.89c.17-.65.77-1.11 1.44-1.11h1.33l6.78 8h2.63L15 13.97a3.444 3.444 0 0 0 3-2.56L20 4h-2.07l-1.85 6.89c-.17.65-.77 1.11-1.44 1.11h-1.33L6.53 4Z"></path></svg><span class="nav-text">עברית</span></a></li>
+            <li class="nav-item mode-switcher"><a href="#" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69z"></path></svg><span class="nav-text">Mode</span></a><div class="mode-options"><button class="mode-btn" id="light-mode-btn">Light</button><button class="mode-btn" id="dark-mode-btn">Dark</button></div></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <div class="content-wrapper">
+            <div class="content-area">
+                <header class="main-header">
+                    <h1>Lee Laster</h1>
+                    <p>B2B Marketing Executive | Sales and Business Development | Drone Expert</p>
+                </header>
+                <div id="dynamic-content-container">
+                    <!-- Overview Section -->
+                    <div id="overview-content" class="content-section active-section">
+                        <ul class="personal-details">
+                            <li><a href="mailto:leelaster@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg> <span>leelaster@gmail.com</span></a></li>
+                            <li><a href="tel:+972542008855"><svg class="icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg> <span>+972.54.200.88.55</span></a></li>
+                            <li><a href="https://www.linkedin.com/in/leelaster/" target="_blank"><svg class="icon" viewBox="0 0 24 24"><path d="M18.72 3.99997H5.37C5.19793 3.99191 5.02595 4.01786 4.86392 4.07635C4.70189 4.13484 4.55299 4.22471 4.42573 4.34081C4.29848 4.45692 4.19537 4.59699 4.12232 4.75299C4.04927 4.909 4.0077 5.07788 4 5.24997V18.63C4.01008 18.9901 4.15766 19.3328 4.41243 19.5875C4.6672 19.8423 5.00984 19.9899 5.37 20H18.72C19.0701 19.9844 19.4002 19.8322 19.6395 19.5761C19.8788 19.32 20.0082 18.9804 20 18.63V5.24997C20.0029 5.08247 19.9715 4.91616 19.9078 4.76122C19.8441 4.60629 19.7494 4.466 19.6295 4.34895C19.5097 4.23191 19.3672 4.14059 19.2108 4.08058C19.0544 4.02057 18.8874 3.99314 18.72 3.99997ZM9 17.34H6.67V10.21H9V17.34ZM7.89 9.12997C7.72741 9.13564 7.5654 9.10762 7.41416 9.04768C7.26291 8.98774 7.12569 8.89717 7.01113 8.78166C6.89656 8.66615 6.80711 8.5282 6.74841 8.37647C6.6897 8.22474 6.66301 8.06251 6.67 7.89997C6.66281 7.73567 6.69004 7.57169 6.74995 7.41854C6.80986 7.26538 6.90112 7.12644 7.01787 7.01063C7.13463 6.89481 7.2743 6.80468 7.42793 6.74602C7.58157 6.68735 7.74577 6.66145 7.91 6.66997C8.07259 6.66431 8.2346 6.69232 8.38584 6.75226C8.53709 6.8122 8.67431 6.90277 8.78887 7.01828C8.90344 7.13379 8.99289 7.27174 9.05159 7.42347C9.1103 7.5752 9.13699 7.73743 9.13 7.89997C9.13719 8.06427 9.10996 8.22825 9.05005 8.3814C8.99014 8.53456 8.89888 8.6735 8.78213 8.78931C8.66537 8.90513 8.5257 8.99526 8.37207 9.05392C8.21843 9.11259 8.05423 9.13849 7.89 9.12997ZM17.34 17.34H15V13.44C15 12.51 14.67 11.87 13.84 11.87C13.5822 11.8722 13.3313 11.9541 13.1219 12.1045C12.9124 12.2549 12.7546 12.4664 12.67 12.71C12.605 12.8926 12.5778 13.0865 12.59 13.28V17.34H10.29V10.21H12.59V11.21C12.7945 10.8343 13.0988 10.5225 13.4694 10.3089C13.84 10.0954 14.2624 9.98848 14.69 9.99997C16.2 9.99997 17.34 11 17.34 13.13V17.34Z"></path></svg> <span>LinkedIn Profile</span></a></li>
+                        </ul>
+                        <h2>Professional Summary</h2>
+                        <p>Strategic, results-driven B2B Executive with over 16 years of experience in online-centric marketing, sales, and business development. A seasoned professional with a deep passion for Drone Tech. My career is defined by driving end-to-end growth strategies, building high-performing teams, and executing hands-on, full-funnel campaigns for Israeli brands with global outreach.</p>
+
+                        <p>I excel at leveraging innovative approaches and a data-driven mindset to transform products into scalable market solutions and secure measurable growth. My strengths include rapid skill acquisition, adeptness in using emerging tools, and a history of managing significant marketing budgets to achieve critical business objectives. I am also a native English speaker, ensuring clear communication with international clients and partners.</p>
+
+                        <p>I believe in taking bold, creative action while maintaining a clear, data-informed focus on the path to success.</p>
+
+                        <p>As a self-starter, I thrive in dynamic, complex environments where I lead by example to design, implement, and maintain an effective Go-to-market strategy and marketing plan. I believe strong sales and marketing collaboration is essential for success.</p>
+
+                        <p>Both as a manager and a subordinate, I believe that achieving success hinges on honest communication (especially when challenges arise), a data-driven approach, and maintaining a healthy work-life balance.</p>
+
+                        <p>From a personal perspective, I am dedicated to continuous personal, professional, and mental growth. I strive to make a positive impact on my surroundings—at work, with friends, and at home—and believe that smiles are an endless resource.
+</p>
+                    </div>
+
+                    <!-- Experience Detail Section -->
+                    <div id="experience-content" class="content-section">
+                         <!-- Content will be populated by JS -->
+                    </div>
+                    
+                    <!-- Skills Section -->
+                    <div id="skills-content" class="content-section">
+                        <h2>Skills</h2>
+                        <div class="skills-grid">
+                            <div class="skill-category">
+                                <h3>Personal/Soft Skills</h3> 
+                                <ul>
+                                    <li>Self-Starter</li>
+                                    <li>Autodidact</li>
+                                    <li>Team Player</li>
+                                    <li>Creative mindset</li>
+                                    <li>Data-Driven</li>
+                                    <li>Innovation early adopter</li>
+                                    <li>Loyalty</li>
+                                    <li>Interpersonal communications</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category">
+                                <h3>Professional Skills</h3> 
+                                <ul>
+                                    <li>B2B Marketing Strategy</li>
+                                    <li>Go-to-Market (GTM) Planning</li>
+                                    <li>Team Leadership</li>
+                                    <li>Full-Funnel Strategy & Execution</li>
+                                    <li>Budget Management</li>
+                                    <li>Brand-to-Pipeline integration</li>
+                                    <li>Growth Hacking</li>
+                                    <li>Lead Generation</li>
+                                    <li>Client Journey and Nurturing</li>
+                                    <li>Customer success</li>
+                                    <li>Exceptional Presentation skills</li>
+                                </ul>
+                            </div>
+                            <div class="skill-category full-width">
+                                <h3>Technical Skills</h3>
+                                <ul id="business-skills-list">
+                                    <li>MarTech Stack & Automation</li>
+                                    <li>AI Tools</li>
+                                    <li>Data Visualization (PowerBI)</li>
+                                    <li>Online Campaigns & Social Media</li>
+                                    <li>Content Creation Platforms</li>
+                                    <li>LOS Drone Pilot (CAAI licensed)</li>
+                                    <li>Online Analytics</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Section -->
+                    <div id="education-content" class="content-section">
+                        <h2>Education</h2>
+                        <div class="education-item">
+                            <h3>Post MBA Executive Studies Global Marketing</h3> 
+                            <p>The Wharton School (Pen University) | 2005</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>MBA (Marketing)</h3>
+                            <p>Interdisciplinary Center (IDC), Herzeliya | 2005</p>
+                        </div>
+                        <div class="education-item">
+                            <h3>BA in Computer Science</h3>
+                            <p>Academic College of Tel-Aviv Yaffo, Tel-Aviv | 2001</p>
+                        </div>
+                    </div>
+
+                    <!-- Languages Section -->
+                    <div id="languages-content" class="content-section">
+                        <h2>Languages</h2>
+                        <div class="education-item">
+                            <h3>Hebrew</h3>
+                            <p>Native</p>
+                        </div>
+                         <div class="education-item">
+                            <h3>English</h3>
+                            <p>British, near-native fluency</p> 
+                        </div>
+                         <div class="education-item">
+                            <h3>French</h3>
+                            <p>Basic</p> 
+                        </div>
+                    </div>
+                    
+                    <div id="full-experience-content" class="content-section">
+                        <div class="experience-accordion"></div>
+                    </div>
+
+                     <!-- About Section -->
+                    <div id="about-content" class="content-section">
+                        <h2>About This Project</h2>
+                        <p>This interactive CV was born from a creative initiative to go beyond a static document and offer a dynamic, engaging experience. Developed as a personal project, it is a testament to my ability to envision a unique concept and pull it together quickly.</p>
+                        <p>I leveraged my marketing expertise and creative mindset to design the project, collaborated with a friend for technical assistance and used several AI tools to streamline the process.</p>
+                        <p>Ultimately, this page demonstrates my strategic approach: identifying a need, outlining the right scope of the project, finding the right people and tools to execute, and delivering a polished, aesthetically pleasing and user-centric product.</p>
+                    </div>
+
+                     <!-- AI Chat Section -->
+                    <div id="ai-chat-content" class="content-section">
+                        <div class="chat-window" id="main-chat-window"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-ruler"></div>
+                <div class="timeline-event" data-role="quadpole"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2023-Pres.</div><div class="tooltip"><h3>Fractional CMO</h3><h4>Quadpole</h4></div></div>
+                <div class="timeline-event" data-role="kcr"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2020-Pres.</div><div class="tooltip"><h3>Fractional CMO</h3><h4>KCR</h4></div></div>
+                <div class="timeline-event" data-role="allcloud"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2017-2020</div><div class="tooltip"><h3>Chief Marketing Officer</h3><h4>AllCloud.io</h4></div></div>
+                <div class="timeline-event" data-role="kueri"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2015-2017</div><div class="tooltip"><h3>Business Dev. Director</h3><h4>Kueri.me</h4></div></div>
+                <div class="timeline-event" data-role="terrascan"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2013-2015</div><div class="tooltip"><h3>Marketing Director</h3><h4>Terrascan LTD</h4></div></div>
+                <div class="timeline-event" data-role="cortex"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2009-2013</div><div class="tooltip"><h3>Chief Marketing Officer</h3><h4>Cortex Medical</h4></div></div>
+                <div class="timeline-event" data-role="gecko"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2004-2009</div><div class="tooltip"><h3>Marketing & Sales Dir.</h3><h4>Gecko</h4></div></div>
+                <div class="timeline-event" data-role="military"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"></path></svg></div><div class="timeline-year">Service</div><div class="tooltip"><h3>Air Force</h3><h4>Avionics Expert</h4></div></div>
+            </div>
+        </div>
+        <div class="chat-form-container">
+            <form class="chat-form" id="chat-form">
+                <textarea id="chat-input" placeholder="Ask me anything..." rows="1"></textarea>
+                <button type="submit" id="send-btn">
+                    <svg viewBox="0 0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Data for Job Roles ---
+            const experienceDetails = {
+                quadpole: {
+                    title: "Fractional CMO and Business Development Director",
+                    company: "Quadpole (Tethered Drones)",
+                    year: "2023–Present",
+                    details: [
+                        "Hands-on Marketing funnel execution, leveraging Martech stack and automation tools.",
+                        "Managing Business Development for expansion and product sales.",
+                        "Improving conversion ratios for sales funnel with complete client journey nurturing."
+                    ]
+                },
+                kcr: {
+                    title: "Fractional CMO and Customer Success Director",
+                    company: "KCR (Corporate Recovery)",
+                    year: "2020–Present",
+                    details: [
+                        "In charge of Growth Marketing covering content, online presence and full funnel ownership.",
+                        "Customer Success Director, focused on retention."
+                    ]
+                },
+                allcloud: {
+                    title: "Chief Marketing Officer",
+                    company: "AllCloud.io (Global Cloud Solutions)",
+                    year: "2017–2020",
+                    details: [
+                        "Led B2B SaaS Marketing Strategy and execution, driving brand-to-pipeline leadership.",
+                        "Oversaw merger branding, positioning, GTM plans, and prepared investor-facing briefs.",
+                        "Managed marketing team, Events and Conferences - delivering measurable YoY growth.",
+                        "Notable Achievement: secured the company's Global Gartner magic-quadrant inclusion 2018."
+                    ]
+                },
+                kueri: {
+                    title: "Business Development Director",
+                    company: "Kueri.me (SaaS DB Interfaces)",
+                    year: "2015–2017",
+                    details: [
+                        "All-around B2B multi-disciplinary growth manager in a fast-paced start-up environment.",
+                        "Focused on Online presence, Lead generation, and successful contract negotiations.",
+                        "Notable achievement: Recruited 10 design partners in 2 months, accelerating product validation."
+                    ]
+                },
+                terrascan: {
+                    title: "Marketing Director",
+                    company: "Terrascan LTD (Aerial Drone Mapping)",
+                    year: "2013-2015",
+                    details: [
+                        "Directed comprehensive online marketing and sales.",
+                        "I hold a CAAI License as a skilled LOS Drone Pilot operator.",
+                        "Notable achievement: Managed development, production and licensing of Aerial Platforms."
+                    ]
+                },
+                cortex: {
+                    title: "Chief Marketing Officer",
+                    company: "Cortex Medical Technologies (Medical Devices)",
+                    year: "2009-2013",
+                    details: [
+                        "Conducted B2B2C global Market Research and managed substantial budget (> $1 Million).",
+                        "Led a marketing team, expanded global client base and improved monthly sales metrics.",
+                        "Notable achievement: Located and signed distributor deals responsible for 25% turnover increase."
+                    ]
+                },
+                gecko: {
+                    title: "Marketing & Sales Director",
+                    company: "Gecko (Presentations, Digital Media & Content)",
+                    year: "2004-2009",
+                    details: [
+                        "Founded and managed a thriving investors' presentations agency; Team of 20+ employees."
+                    ]
+                },
+                 military: {
+                    title: "Airborne Avionics Expert",
+                    company: "Israeli Air-Force",
+                    year: "Service",
+                    details: ["Served as an Airborne Avionics Expert in the Israeli Air-Force."]
+                },
+                previousExperienceSummary: { // New field for previous experience summary
+                     title: "Previous experience Summary:",
+                     details: [
+                         "<b>B2B SaaS Strategy</b>: Drove brand-to-pipeline leadership, securing Gartner magic quadrant inclusion.",
+                         "<b>Global GTM</b>: Oversaw global merger branding, positioning, and Go-to-Market plans.",
+                         "<b>Drone Expertise</b>: Directed marketing for a drone mapping company, managed the development and licensing of aerial platforms.",
+                         "<b>Budget & Team Leadership</b>: Managed teams and events with significant budgets (over $1M).",
+                         "<b>Growth Hacking</b>: Accelerated product validation by recruiting 10 design partners in two months.",
+                         "<b>Creative Execution</b>: Founded and managed a thriving agency, specializing in investor presentations and digital media.",
+                         "<b>Data & Analytics</b>: Implemented Power BI for customer success insights and managed online campaigns.",
+                         "<b>Online Presence & Leads</b>: Drove growth, content, and lead generation, improving conversion ratios.",
+                         "<b>Presentation skills</b>: I wrote and designed presentations for several famous CEOs and startups for investment purposes."
+                     ]
+                 }
+            };
+            
+            // --- Theme Switcher ---
+            const lightModeBtn = document.getElementById('light-mode-btn');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            function setTheme(theme) {
+                localStorage.setItem('theme', theme);
+                document.body.className = theme === 'dark' ? 'dark-mode' : '';
+                lightModeBtn.classList.toggle('active', theme !== 'dark');
+                darkModeBtn.classList.toggle('active', theme === 'dark');
+            }
+            lightModeBtn.addEventListener('click', () => setTheme('light'));
+            darkModeBtn.addEventListener('click', () => setTheme('dark'));
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+
+            // --- Dynamic Content Switcher ---
+            const navLinks = document.querySelectorAll('.nav-link[data-target]');
+            const contentSections = document.querySelectorAll('.content-section');
+            const dynamicContentContainer = document.getElementById('dynamic-content-container');
+            const experienceContentDiv = document.getElementById('experience-content');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const fullExperienceContainer = document.querySelector('#full-experience-content .experience-accordion');
+
+
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+
+            function switchContent(targetId) {
+                 dynamicContentContainer.classList.remove('chat-mode');
+                 contentSections.forEach(section => {
+                    section.classList.toggle('active-section', section.id === targetId);
+                });
+
+                navLinks.forEach(navLink => {
+                    navLink.classList.toggle('active-link', navLink.dataset.target === targetId);
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    dynamicContentContainer.classList.remove('chat-mode');
+                    if(this.dataset.target === 'experience-content'){
+                        displayExperienceContentWithSummary('quadpole');
+                    }
+                    switchContent(this.dataset.target);
+                    document.querySelectorAll('.timeline-event').forEach(evt => evt.classList.remove('active-event'));
+                    sidebar.classList.remove('open');
+                });
+            });
+
+            function displayExperienceContent(roleKey) {
+                const details = experienceDetails[roleKey];
+                let bulletsHtml = details.details.map(bullet => `<li>${bullet}</li>`).join('');
+
+                experienceContentDiv.innerHTML = `
+                    <h2>${details.title}</h2>
+                    <div class="job-detail-item">
+                        <p>${details.company}</p>
+                        <ul>${bulletsHtml}</ul>
+                    </div>
+                `;
+            }
+
+            function displayExperienceContentWithSummary(roleKey) {
+                 const details = experienceDetails[roleKey];
+                 const summaryDetails = experienceDetails['previousExperienceSummary'];
+
+                 let currentJobBulletsHtml = details.details.map(bullet => `<li>${bullet}</li>`).join('');
+
+                 let previousExperienceHtml = '';
+                 if (summaryDetails && summaryDetails.details && summaryDetails.details.length > 0) {
+                     const summaryBulletsHtml = summaryDetails.details.map(bullet => `<li>${bullet}</li>`).join('');
+                     previousExperienceHtml = `
+                         <div class="job-detail-item">
+                             <h3>${summaryDetails.title}</h3>
+                             <ul>${summaryBulletsHtml}</ul>
+                         </div>
+                     `;
+                 }
+
+                 experienceContentDiv.innerHTML = `
+                     <h2>${details.title}</h2>
+                     <div class="job-detail-item">
+                         <p>${details.company}</p>
+                         <ul>${currentJobBulletsHtml}</ul>
+                     </div>
+                     ${previousExperienceHtml}
+                 `;
+             }
+
+            // --- Timeline Click Logic ---
+            const timelineEvents = document.querySelectorAll('.timeline-event');
+            
+            timelineEvents.forEach(event => {
+                event.addEventListener('click', function() {
+                    dynamicContentContainer.classList.remove('chat-mode');
+                    const roleKey = this.dataset.role;
+                    if (!roleKey || !experienceDetails[roleKey]) {
+                        if (roleKey === 'education') {
+                             switchContent('education-content');
+                        }
+                        return;
+                    }
+                    
+                    const details = experienceDetails[roleKey];
+                    let bulletsHtml = details.details.map(bullet => `<li>${bullet}</li>`).join('');
+                    experienceContentDiv.innerHTML = `
+                        <h2>${details.title}</h2>
+                        <div class="job-detail-item">
+                            <p>${details.company}</p>
+                            <ul>${bulletsHtml}</ul>
+                        </div>
+                    `;
+                    switchContent('experience-content');
+                    timelineEvents.forEach(evt => evt.classList.remove('active-event'));
+                    this.classList.add('active-event');
+                });
+            });
+
+             // --- Mobile Full Experience Accordion ---
+            if (fullExperienceContainer) {
+                 const rolesInOrder = ['quadpole', 'kcr', 'allcloud', 'kueri', 'terrascan', 'cortex', 'gecko', 'military'];
+                 rolesInOrder.forEach(roleKey => {
+                    const job = experienceDetails[roleKey];
+                    const item = document.createElement('div');
+                    item.className = 'accordion-item';
+                    item.innerHTML = `
+                        <div class="accordion-header">
+                            <h3><span class="arrow">▶</span> ${job.year}: ${job.title}</h3>
+                        </div>
+                        <div class="accordion-details">
+                            <p>${job.company}</p>
+                            <ul>${job.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                        </div>
+                    `;
+                    fullExperienceContainer.appendChild(item);
+                });
+
+                fullExperienceContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.accordion-header');
+                    if (!header) return;
+                    const item = header.parentElement;
+                    
+                    // Close all other items
+                    this.querySelectorAll('.accordion-item').forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            }
+
+            // --- Chatbot Logic ---
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const mainChatWindow = document.getElementById('main-chat-window');
+            
+            chatInput.addEventListener('focus', () => {
+                dynamicContentContainer.classList.add('chat-mode');
+                switchContent('ai-chat-content');
+            });
+
+
+            chatInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                }
+            });
+
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) return;
+                
+                displayUserMessage(userMessage);
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+                
+                const typingIndicator = displayTypingIndicator();
+
+                try {
+                    const botResponse = await getGeminiResponse(userMessage);
+                    typingIndicator.remove();
+                    displayBotMessage(botResponse);
+                } catch (error) {
+                    console.error("Error fetching Gemini response:", error);
+                    typingIndicator.remove();
+                    displayBotMessage("Sorry, I'm having trouble connecting right now. Please try again later.");
+                }
+            });
+
+            function displayUserMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message user-message';
+                messageElement.innerHTML = `<div class="message-bubble">${message}</div>`;
+                mainChatWindow.appendChild(messageElement);
+                scrollToBottom();
+            }
+
+            function displayBotMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message bot-message';
+                messageElement.innerHTML = `<div class="message-bubble">${marked.parse(message)}</div>`;
+                mainChatWindow.appendChild(messageElement);
+                scrollToBottom();
+            }
+            
+            function displayTypingIndicator() {
+                const indicatorElement = document.createElement('div');
+                indicatorElement.className = 'chat-message bot-message typing-indicator';
+                indicatorElement.innerHTML = `<div class="message-bubble"><span></span><span></span><span></span></div>`;
+                mainChatWindow.appendChild(indicatorElement);
+                scrollToBottom();
+                return indicatorElement;
+            }
+
+            function scrollToBottom() {
+                mainChatWindow.scrollTop = mainChatWindow.scrollHeight;
+            }
+
+            async function getGeminiResponse(prompt) {
+                const apiKey = "AIzaSyCAiU5C_kjdFwTPPWWHdNXk36bujFN1u-k"; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const systemPrompt = `You are Lee Laster, answering in the first person. You are an expert marketer in the B2B tech and drone space. Use the following resume and personality traits to craft your answers.
+
+**Core Persona:**
+- I am a creative, innovation-driven self-starter and a fast learner.
+- I am a data-driven individual who loves trivia.
+- I am a hands-on, collaborative manager who loves learning new tools and believes in promoting women in the workplace.
+- I believe in finding the right people and the right tools to execute a vision efficiently.
+- I can be direct and concise, but also personable when appropriate.
+
+**Professional Methodology:**
+My marketing methodology is based on a four-stage model: Design, Validation, Mechanization, and Scale.
+
+**Core Messaging:**
+- **On my background:** My career is defined by driving end-to-end growth strategies, building and leading small marketing teams, and executing hands-on, full-funnel campaigns for global brands.
+- **On the interactive CV project:** This project was a personal initiative to offer a dynamic alternative to a traditional resume. It demonstrates my strategic approach of identifying a need, outlining the right scope, finding the right people and tools (including AI) to execute, and delivering a polished, user-centric product.
+- **On my drone experience:** My experience is highly relevant, from my time as a licensed LOS Drone Pilot at Terrascan to my current work at Quadpole. I have hands-on expertise in the field and a genuine passion for drone technology. My love for flying and building RC model planes since I was a kid and my workshop with over 1000 tools show my deep practical passion for building things.
+
+**Personal Details & Hobbies:**
+- **Hobbies & Favorites:** I enjoy art, poetry, and pottery, and I practice them on a weekly basis. I also love cooking, particularly steaks, pasta, and salads with balsamic vinegar. My favorite color is blue. My favorite animal is a cat; my cat is a Ragdoll named Vincent.
+- **Family:** My father is a doctor and a surgeon, and I have a 19-year-old daughter. I was born and raised in a Kibbutz.
+- **Military Service:** I served in the Israeli Air-Force as an Airborne Avionics Expert.
+- **Citizenship:** I hold European and Israeli citizenships.
+- **Personal Motto:** "Find a way. And if you can't - pave one."
+
+**Specific Instructions:**
+- **Use the resume and additional context as the foundation. Respond concisely and professionally, but with personality when appropriate.**
+- For any questions related to past experience (e.g., "Tell me about your time at AllCloud"), use the provided resume information to provide a concise, high-impact summary.
+- Do not discuss politics, religion, or other controversial topics.
+
+My Resume Info:
+${getResumeText()}
+
+Now, please answer in English (only) the following question:
+Question: ${prompt}
+`;
+                const payload = {
+                    contents: [{
+                        parts: [{ text: systemPrompt }]
+                    }]
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                   return "I couldn't generate a response. Please try again.";
+                }
+            }
+            
+            function getResumeText() {
+                let resumeContext = `Professional Summary: ${document.querySelector('#overview-content').textContent.trim()}\n`;
+                resumeContext += `Skills: ${document.querySelector('#skills-content').textContent.trim()}\n`;
+                Object.values(experienceDetails).forEach(job => {
+                     resumeContext += `- ${job.title} at ${job.company}: ${job.details.join(', ')}\n`;
+                });
+                return resumeContext;
+            }
+
+            displayExperienceContentWithSummary('quadpole');
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
