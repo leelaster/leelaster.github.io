@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+
+<html dir="rtl" lang="he">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>לי לסטר - קורות חיים דינמיים</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>לי לסטר - קורות חיים דינמיים</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap'); /* For Hebrew */
 
 
@@ -389,176 +390,159 @@
     </style>
 </head>
 <body>
-
 <div class="page-container">
-    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
-    </button>
-    <nav class="sidebar" id="sidebar">
-        <ul class="sidebar-nav">
-            <li class="nav-item"><a href="#" class="nav-link active-link" data-target="overview-content"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><span class="nav-text">סקירה כללית</span></a></li>
-            <li class="nav-item mobile-only"><a href="#" class="nav-link" data-target="full-experience-content"><svg class="icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z"></path></svg><span class="nav-text">ניסיון מלא</span></a></li>
-            <li class="nav-item desktop-only"><a href="#" class="nav-link" data-target="experience-content" id="experience-nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg><span class="nav-text">ניסיון</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-target="skills-content"><svg class="icon" viewBox="0 0 24 24"><path d="m20.56,3.17c-.29-.2-.67-.23-.99-.08L2.57,11.1c-.35.17-.58.53-.57.92s.24.75.6.9l5.4,2.36v6.72l5.84-4.17,4.76,2.08c.13.06.26.08.4.08.18,0,.36-.05.52-.15.28-.17.46-.46.48-.79l1-15c.02-.35-.14-.69-.43-.89Zm-2.47,14.34l-5.21-2.28,3.12-6.23-7.65,4.25-2.93-1.28,13.47-6.34-.79,11.89Z"></path></svg><span class="nav-text">כישורים</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-target="education-content"><svg class="icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg><span class="nav-text">השכלה</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-target="languages-content"><svg class="icon" viewBox="0 0 24 24"><path d="M9 2a8.002 8.002 0 0 1 7.934 6.965l2.25 3.539c.148.233.118.58-.225.728L17 14.07V17a2 2 0 0 1-2 2h-1.999L13 22H4v-3.694c0-1.18-.436-2.297-1.244-3.305A8 8 0 0 1 9 2Zm12.154 16.102l-1.665-1.11A8.959 8.959 0 0 0 21 12a8.958 8.958 0 0 0-1.51-4.993l1.664-1.11A10.948 10.948 0 0 1 23 12c0 2.258-.68 4.356-1.846 6.102Z"></path></svg><span class="nav-text">שפות</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link" data-target="about-content"><svg class="icon" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="nav-text">אודות</span></a></li>
-            <li class="nav-item"><a href="index.html" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M14 10h2v.757a4.5 4.5 0 0 1 7 3.743V20h-2v-5.5c0-1.43-1.175-2.5-2.5-2.5S16 13.07 16 14.5V20h-2V10zm-2-6v2H4v5h8v2H4v5h8v2H2V4h10z"></path></svg><span class="nav-text">English</span></a></li>
-            <li class="nav-item mode-switcher"><a href="#" class="nav-link"><svg class="icon" viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69z"></path></svg><span class="nav-text">מצב תצוגה</span></a><div class="mode-options"><button class="mode-btn" id="light-mode-btn">בהיר</button><button class="mode-btn" id="dark-mode-btn">כהה</button></div></li>
-        </ul>
-    </nav>
-
-    <main class="main-content">
-        
-        <div class="content-wrapper">
-            <div class="content-area">
-                <header class="main-header">
-                    <h1>לי לסטר</h1>
-                    <p>מנהל שיווק B2B | מכירות ופיתוח עסקי | מומחה לרחפנים</p>
-                </header>
-                <div id="dynamic-content-container">
-                    <div id="overview-content" class="content-section active-section">
-                        <ul class="personal-details">
-                            <li><a href="mailto:leelaster@gmail.com"><svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg> <span>leelaster@gmail.com</span></a></li>
-                            <li><a href="tel:+972542008855"><svg class="icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg> <span>054.200.88.55</span></a></li>
-                            <li><a href="https://www.linkedin.com/in/leelaster/" target="_blank"><svg class="icon" viewBox="0 0 24 24"><path d="M18.72 3.99997H5.37C5.19793 3.99191 5.02595 4.01786 4.86392 4.07635C4.70189 4.13484 4.55299 4.22471 4.42573 4.34081C4.29848 4.45692 4.19537 4.59699 4.12232 4.75299C4.04927 4.909 4.0077 5.07788 4 5.24997V18.63C4.01008 18.9901 4.15766 19.3328 4.41243 19.5875C4.6672 19.8423 5.00984 19.9899 5.37 20H18.72C19.0701 19.9844 19.4002 19.8322 19.6395 19.5761C19.8788 19.32 20.0082 18.9804 20 18.63V5.24997C20.0029 5.08247 19.9715 4.91616 19.9078 4.76122C19.8441 4.60629 19.7494 4.466 19.6295 4.34895C19.5097 4.23191 19.3672 4.14059 19.2108 4.08058C19.0544 4.02057 18.8874 3.99314 18.72 3.99997ZM9 17.34H6.67V10.21H9V17.34ZM7.89 9.12997C7.72741 9.13564 7.5654 9.10762 7.41416 9.04768C7.26291 8.98774 7.12569 8.89717 7.01113 8.78166C6.89656 8.66615 6.80711 8.5282 6.74841 8.37647C6.6897 8.22474 6.66301 8.06251 6.67 7.89997C6.66281 7.73567 6.69004 7.57169 6.74995 7.41854C6.80986 7.26538 6.90112 7.12644 7.01787 7.01063C7.13463 6.89481 7.2743 6.80468 7.42793 6.74602C7.58157 6.68735 7.74577 6.66145 7.91 6.66997C8.07259 6.66431 8.2346 6.69232 8.38584 6.75226C8.53709 6.8122 8.67431 6.90277 8.78887 7.01828C8.90344 7.13379 8.99289 7.27174 9.05159 7.42347C9.1103 7.5752 9.13699 7.73743 9.13 7.89997C9.13719 8.06427 9.10996 8.22825 9.05005 8.3814C8.99014 8.53456 8.89888 8.6735 8.78213 8.78931C8.66537 8.90513 8.5257 8.99526 8.37207 9.05392C8.21843 9.11259 8.05423 9.13849 7.89 9.12997ZM17.34 17.34H15V13.44C15 12.51 14.67 11.87 13.84 11.87C13.5822 11.8722 13.3313 11.9541 13.1219 12.1045C12.9124 12.2549 12.7546 12.4664 12.67 12.71C12.605 12.8926 12.5778 13.0865 12.59 13.28V17.34H10.29V10.21H12.59V11.21C12.7945 10.8343 13.0988 10.5225 13.4694 10.3089C13.84 10.0954 14.2624 9.98848 14.69 9.99997C16.2 9.99997 17.34 11 17.34 13.13V17.34Z"></path></svg> <span>פרופיל לינקדאין</span></a></li>
-                        </ul>
-                        <h2>תקציר מקצועי</h2>
-                        <p>מנהל B2B אסטרטגי וממוקד תוצאות עם למעלה מ-16 שנות ניסיון בשיווק, מכירות ופיתוח עסקי הממוקדים בעולמות האונליין. איש מקצוע מנוסה עם תשוקה עמוקה לטכנולוגיית רחפנים. הקריירה שלי מאופיינת בהנעת אסטרטגיות צמיחה מקצה לקצה, בניית צוותים בעלי ביצועים גבוהים וביצוע מעשי (hands-on) של קמפיינים פול-פאנל עבור מותגים ישראליים בעלי חשיפה גלובלית.</p>
-                        <p>אני מצטיין במינוף גישות חדשניות וחשיבה מבוססת נתונים כדי להפוך מוצרים לפתרונות שוק סקיילביליים ולהבטיח צמיחה מדידה. החוזקות שלי כוללות רכישת מיומנויות מהירה, מיומנות בשימוש בכלים חדשניים, והיסטוריה של ניהול תקציבי שיווק משמעותיים להשגת יעדים עסקיים קריטיים. אני גם דובר אנגלית שפת אם, מה שמבטיח תקשורת ברורה עם לקוחות ושותפים בינלאומיים.</p>
-                        <p>אני מאמין בנקיטת פעולה נועזת ויצירתית, תוך שמירה על מיקוד ברור ומבוסס נתונים בדרך להצלחה.</p>
-                        <p>כ-self-starter, אני משגשג בסביבות דינמיות ומורכבות, בהן אני מוביל באמצעות דוגמה אישית לתכנון, יישום ותחזוקה של אסטרטגיית Go-to-Market ותוכנית שיווק אפקטיבית. אני מאמין ששיתוף פעולה חזק בין מכירות ושיווק הוא חיוני להצלחה.</p>
-                        <p>הן כמנהל והן ככפיף, אני מאמין שהשגת הצלחה תלויה בתקשורת כנה (במיוחד כאשר עולים אתגרים), גישה מבוססת נתונים ושמירה על איזון בריא בין עבודה לחיים.</p>
-                        <p>מנקודת מבט אישית, אני מחויב לצמיחה אישית, מקצועית ומנטלית מתמשכת. אני שואף להשפיע לטובה על סביבתי — בעבודה, עם חברים ובבית — ומאמין שחיוכים הם משאב אינסופי.</p>
-                    </div>
-
-                    <div id="experience-content" class="content-section">
-                         </div>
-                    
-                    <div id="skills-content" class="content-section">
-                        <h2>כישורים</h2>
-                        <div class="skills-grid">
-                            <div class="skill-category">
-                                <h3>כישורים אישיים/רכים</h3> 
-                                <ul>
-                                    <li>יוזם עצמאי (Self-Starter)</li>
-                                    <li>אוטודידקט</li>
-                                    <li>שחקן צוות</li>
-                                    <li>חשיבה יצירתית</li>
-                                    <li>מבוסס נתונים</li>
-                                    <li>מאמץ מוקדם של חדשנות</li>
-                                    <li>נאמנות</li>
-                                    <li>תקשורת בין-אישית</li>
-                                </ul>
-                            </div>
-                            <div class="skill-category">
-                                <h3>כישורים מקצועיים</h3> 
-                                <ul>
-                                    <li>אסטרטגיית שיווק B2B</li>
-                                    <li>תכנון יציאה לשוק (GTM)</li>
-                                    <li>הובלת צוות</li>
-                                    <li>אסטרטגיה וביצוע פול-פאנל</li>
-                                    <li>ניהול תקציב</li>
-                                    <li>אינטגרציית מותג-ל-Pipeline</li>
-                                    <li>Growth Hacking</li>
-                                    <li>ייצור לידים</li>
-                                    <li>מסע לקוח וטיפוח לקוחות</li>
-                                    <li>הצלחת לקוח</li>
-                                    <li>כישורי פרזנטציה יוצאי דופן</li>
-                                </ul>
-                            </div>
-                            <div class="skill-category full-width">
-                                <h3>כישורים טכניים</h3>
-                                <ul id="business-skills-list">
-                                    <li>מערכות MarTech ואוטומציה</li>
-                                    <li>כלי AI</li>
-                                    <li>הדמיית נתונים (PowerBI)</li>
-                                    <li>קמפיינים אונליין ומדיה חברתית</li>
-                                    <li>פלטפורמות ליצירת תוכן</li>
-                                    <li>מטיס רחפנים (רישיון רת"א)</li>
-                                    <li>אנליטיקס אונליין</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="education-content" class="content-section">
-                        <h2>השכלה</h2>
-                        <div class="education-item">
-                            <h3>פוסט MBA לימודים למנהלים בשיווק גלובלי</h3> 
-                            <p>The Wharton School (Pen University) | 2005</p>
-                        </div>
-                        <div class="education-item">
-                            <h3>MBA (שיווק)</h3>
-                            <p>Interdisciplinary Center (IDC), הרצליה | 2005</p>
-                        </div>
-                        <div class="education-item">
-                            <h3>BA במדעי המחשב</h3>
-                            <p>Academic College of Tel-Aviv Yaffo, תל אביב | 2001</p>
-                        </div>
-                    </div>
-
-                    <div id="languages-content" class="content-section">
-                        <h2>שפות</h2>
-                        <div class="education-item">
-                            <h3>עברית</h3>
-                            <p>שפת אם</p>
-                        </div>
-                         <div class="education-item">
-                            <h3>אנגלית</h3>
-                            <p>בריטית, רמה קרובה לשפת אם</p> 
-                        </div>
-                         <div class="education-item">
-                            <h3>צרפתית</h3>
-                            <p>בסיסית</p> 
-                        </div>
-                    </div>
-                    
-                    <div id="full-experience-content" class="content-section">
-                        <div class="experience-accordion"></div>
-                    </div>
-
-                     <div id="about-content" class="content-section">
-                        <h2>אודות</h2>
-                        <p>אבא; קדרות ואמנות; הטסת רחפני RC ובנייתם</p>
-                        <div class="education-item">
-                             <h3>שירות צבאי</h3>
-                            <p>חיל האוויר הישראלי, מומחה אוויוניקה מוטסת</p>
-                        </div>
-                         <div class="education-item">
-                            <h3>אזרחות</h3>
-                            <p>ישראלית, אירופאית</p>
-                        </div>
-                    </div>
-
-                     <div id="ai-chat-content" class="content-section">
-                        <div class="chat-window" id="main-chat-window"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-container">
-                <div class="timeline-ruler"></div>
-                <div class="timeline-event" data-role="quadpole"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2023-היום</div><div class="tooltip"><h3>Fractional CMO</h3><h4>Quadpole</h4></div></div>
-                <div class="timeline-event" data-role="kcr"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2020-היום</div><div class="tooltip"><h3>Fractional CMO</h3><h4>KCR</h4></div></div>
-                <div class="timeline-event" data-role="allcloud"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2017-2020</div><div class="tooltip"><h3>סמנכ"ל שיווק</h3><h4>AllCloud.io</h4></div></div>
-                <div class="timeline-event" data-role="kueri"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2015-2017</div><div class="tooltip"><h3>מנהל פיתוח עסקי</h3><h4>Kueri.me</h4></div></div>
-                <div class="timeline-event" data-role="terrascan"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2013-2015</div><div class="tooltip"><h3>מנהל שיווק</h3><h4>Terrascan LTD</h4></div></div>
-                <div class="timeline-event" data-role="cortex"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2009-2013</div><div class="tooltip"><h3>סמנכ"ל שיווק</h3><h4>Cortex Medical</h4></div></div>
-                <div class="timeline-event" data-role="gecko"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/></svg></div><div class="timeline-year">2004-2009</div><div class="tooltip"><h3>מנהל שיווק ומכירות</h3><h4>Gecko</h4></div></div>
-                <div class="timeline-event" data-role="idf"><div class="timeline-marker"><svg class="icon" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"></path></svg></div><div class="timeline-year">שירות צבאי</div><div class="tooltip"><h3>חיל האוויר</h3><h4>מומחה אוויוניקה</h4></div></div>
-            </div>
-        </div>
-        <div class="chat-form-container">
-            <form class="chat-form" id="chat-form">
-                <textarea id="chat-input" placeholder="שאל/י אותי כל דבר..." rows="1"></textarea>
-                <button type="submit" id="send-btn">
-                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></path></svg>
-                </button>
-            </form>
-        </div>
-    </main>
-
-    <script>
+<button class="mobile-menu-toggle" id="mobile-menu-toggle">
+<svg class="icon" viewbox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button>
+<nav class="sidebar" id="sidebar">
+<ul class="sidebar-nav">
+<li class="nav-item"><a class="nav-link active-link" data-target="overview-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><span class="nav-text">סקירה כללית</span></a></li>
+<li class="nav-item mobile-only"><a class="nav-link" data-target="full-experience-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z"></path></svg><span class="nav-text">ניסיון מלא</span></a></li>
+<li class="nav-item desktop-only"><a class="nav-link" data-target="experience-content" href="#" id="experience-nav-link"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg><span class="nav-text">ניסיון</span></a></li>
+<li class="nav-item"><a class="nav-link" data-target="skills-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="m20.56,3.17c-.29-.2-.67-.23-.99-.08L2.57,11.1c-.35.17-.58.53-.57.92s.24.75.6.9l5.4,2.36v6.72l5.84-4.17,4.76,2.08c.13.06.26.08.4.08.18,0,.36-.05.52-.15.28-.17.46-.46.48-.79l1-15c.02-.35-.14-.69-.43-.89Zm-2.47,14.34l-5.21-2.28,3.12-6.23-7.65,4.25-2.93-1.28,13.47-6.34-.79,11.89Z"></path></svg><span class="nav-text">כישורים</span></a></li>
+<li class="nav-item"><a class="nav-link" data-target="education-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"></path></svg><span class="nav-text">השכלה</span></a></li>
+<li class="nav-item"><a class="nav-link" data-target="languages-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M9 2a8.002 8.002 0 0 1 7.934 6.965l2.25 3.539c.148.233.118.58-.225.728L17 14.07V17a2 2 0 0 1-2 2h-1.999L13 22H4v-3.694c0-1.18-.436-2.297-1.244-3.305A8 8 0 0 1 9 2Zm12.154 16.102l-1.665-1.11A8.959 8.959 0 0 0 21 12a8.958 8.958 0 0 0-1.51-4.993l1.664-1.11A10.948 10.948 0 0 1 23 12c0 2.258-.68 4.356-1.846 6.102Z"></path></svg><span class="nav-text">שפות</span></a></li>
+<li class="nav-item"><a class="nav-link" data-target="about-content" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="nav-text">אודות</span></a></li>
+<li class="nav-item"><a class="nav-link" href="index.html"><svg class="icon" viewbox="0 0 24 24"><path d="M3.9 4L9 10.03a3.444 3.444 0 0 0-3 2.56L4 20h2.07l1.85-6.89c.17-.65.77-1.11 1.44-1.11h1.33l6.78 8h2.63L15 13.97a3.444 3.444 0 0 0 3-2.56L20 4h-2.07l-1.85 6.89c-.17.65-.77 1.11-1.44 1.11h-1.33L6.53 4Z"></path></svg><span class="nav-text">English</span></a></li>
+<li class="nav-item mode-switcher"><a class="nav-link" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69z"></path></svg><span class="nav-text">מצב תצוגה</span></a><div class="mode-options"><button class="mode-btn" id="light-mode-btn">בהיר</button><button class="mode-btn" id="dark-mode-btn">כהה</button></div></li>
+</ul>
+</nav>
+<main class="main-content">
+<div class="content-wrapper">
+<div class="content-area">
+<header class="main-header">
+<h1>לי לסטר</h1>
+<p>מנהל שיווק B2B | מכירות ופיתוח עסקי | מומחה לרחפנים</p>
+</header>
+<div id="dynamic-content-container">
+<div class="content-section active-section" id="overview-content">
+<ul class="personal-details">
+<li><a href="mailto:leelaster@gmail.com"><svg class="icon" viewbox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path></svg> <span>leelaster@gmail.com</span></a></li>
+<li><a href="tel:+972542008855"><svg class="icon" viewbox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path></svg> <span>+972.54.200.88.55</span></a></li>
+<li><a href="https://www.linkedin.com/in/leelaster/" target="_blank"><svg class="icon" viewbox="0 0 24 24"><path d="M18.72 3.99997H5.37C5.19793 3.99191 5.02595 4.01786 4.86392 4.07635C4.70189 4.13484 4.55299 4.22471 4.42573 4.34081C4.29848 4.45692 4.19537 4.59699 4.12232 4.75299C4.04927 4.909 4.0077 5.07788 4 5.24997V18.63C4.01008 18.9901 4.15766 19.3328 4.41243 19.5875C4.6672 19.8423 5.00984 19.9899 5.37 20H18.72C19.0701 19.9844 19.4002 19.8322 19.6395 19.5761C19.8788 19.32 20.0082 18.9804 20 18.63V5.24997C20.0029 5.08247 19.9715 4.91616 19.9078 4.76122C19.8441 4.60629 19.7494 4.466 19.6295 4.34895C19.5097 4.23191 19.3672 4.14059 19.2108 4.08058C19.0544 4.02057 18.8874 3.99314 18.72 3.99997ZM9 17.34H6.67V10.21H9V17.34ZM7.89 9.12997C7.72741 9.13564 7.5654 9.10762 7.41416 9.04768C7.26291 8.98774 7.12569 8.89717 7.01113 8.78166C6.89656 8.66615 6.80711 8.5282 6.74841 8.37647C6.6897 8.22474 6.66301 8.06251 6.67 7.89997C6.66281 7.73567 6.69004 7.57169 6.74995 7.41854C6.80986 7.26538 6.90112 7.12644 7.01787 7.01063C7.13463 6.89481 7.2743 6.80468 7.42793 6.74602C7.58157 6.68735 7.74577 6.66145 7.91 6.66997C8.07259 6.66431 8.2346 6.69232 8.38584 6.75226C8.53709 6.8122 8.67431 6.90277 8.78887 7.01828C8.90344 7.13379 8.99289 7.27174 9.05159 7.42347C9.1103 7.5752 9.13699 7.73743 9.13 7.89997C9.13719 8.06427 9.10996 8.22825 9.05005 8.3814C8.99014 8.53456 8.89888 8.6735 8.78213 8.78931C8.66537 8.90513 8.5257 8.99526 8.37207 9.05392C8.21843 9.11259 8.05423 9.13849 7.89 9.12997ZM17.34 17.34H15V13.44C15 12.51 14.67 11.87 13.84 11.87C13.5822 11.8722 13.3313 11.9541 13.1219 12.1045C12.9124 12.2549 12.7546 12.4664 12.67 12.71C12.605 12.8926 12.5778 13.0865 12.59 13.28V17.34H10.29V10.21H12.59V11.21C12.7945 10.8343 13.0988 10.5225 13.4694 10.3089C13.84 10.0954 14.2624 9.98848 14.69 9.99997C16.2 9.99997 17.34 11 17.34 13.13V17.34Z"></path></svg> <span>פרופיל לינקדאין</span></a></li>
+</ul>
+<h2>תקציר מקצועי</h2>
+<p>מנהל B2B אסטרטגי וממוקד תוצאות עם למעלה מ-16 שנות ניסיון בשיווק, מכירות ופיתוח עסקי הממוקדים בעולמות האונליין. איש מקצוע מנוסה עם תשוקה עמוקה לטכנולוגיית רחפנים. הקריירה שלי מאופיינת בהנעת אסטרטגיות צמיחה מקצה לקצה, בניית צוותים בעלי ביצועים גבוהים וביצוע מעשי (hands-on) של קמפיינים פול-פאנל עבור מותגים ישראליים בעלי חשיפה גלובלית.</p>
+<p>אני מצטיין במינוף גישות חדשניות וחשיבה מבוססת נתונים כדי להפוך מוצרים לפתרונות שוק סקיילביליים ולהבטיח צמיחה מדידה. החוזקות שלי כוללות רכישת מיומנויות מהירה, מיומנות בשימוש בכלים חדשניים, והיסטוריה של ניהול תקציבי שיווק משמעותיים להשגת יעדים עסקיים קריטיים. אני גם דובר אנגלית שפת אם, מה שמבטיח תקשורת ברורה עם לקוחות ושותפים בינלאומיים.</p>
+<p>אני מאמין בנקיטת פעולה נועזת ויצירתית, תוך שמירה על מיקוד ברור ומבוסס נתונים בדרך להצלחה.</p>
+<p>כ-self-starter, אני משגשג בסביבות דינמיות ומורכבות, בהן אני מוביל באמצעות דוגמה אישית לתכנון, יישום ותחזוקה של אסטרטגיית Go-to-Market ותוכנית שיווק אפקטיבית. אני מאמין ששיתוף פעולה חזק בין מכירות ושיווק הוא חיוני להצלחה.</p>
+<p>הן כמנהל והן ככפיף, אני מאמין שהשגת הצלחה תלויה בתקשורת כנה (במיוחד כאשר עולים אתגרים), גישה מבוססת נתונים ושמירה על איזון בריא בין עבודה לחיים.</p>
+<p>מנקודת מבט אישית, אני מחויב לצמיחה אישית, מקצועית ומנטלית מתמשכת. אני שואף להשפיע לטובה על סביבתי — בעבודה, עם חברים ובבית — ומאמין שחיוכים הם משאב אינסופי.</p>
+</div>
+<div class="content-section" id="experience-content">
+</div>
+<div class="content-section" id="skills-content">
+<h2>כישורים</h2>
+<div class="skills-grid">
+<div class="skill-category">
+<h3>כישורים אישיים/רכים</h3>
+<ul>
+<li>יוזם עצמאי (Self-Starter)</li>
+<li>אוטודידקט</li>
+<li>שחקן צוות</li>
+<li>חשיבה יצירתית</li>
+<li>מבוסס נתונים</li>
+<li>מאמץ מוקדם של חדשנות</li>
+<li>נאמנות</li>
+<li>תקשורת בין-אישית</li>
+</ul>
+</div>
+<div class="skill-category">
+<h3>כישורים מקצועיים</h3>
+<ul>
+<li>אסטרטגיית שיווק B2B</li>
+<li>תכנון יציאה לשוק (GTM)</li>
+<li>הובלת צוות</li>
+<li>אסטרטגיה וביצוע פול-פאנל</li>
+<li>ניהול תקציב</li>
+<li>אינטגרציית מותג-ל-Pipeline</li>
+<li>Growth Hacking</li>
+<li>ייצור לידים</li>
+<li>מסע לקוח וטיפוח לקוחות</li>
+<li>הצלחת לקוח</li>
+<li>כישורי פרזנטציה יוצאי דופן</li>
+</ul>
+</div>
+<div class="skill-category full-width">
+<h3>כישורים טכניים</h3>
+<ul id="business-skills-list">
+<li>מערכות MarTech ואוטומציה</li>
+<li>כלי AI</li>
+<li>הדמיית נתונים (PowerBI)</li>
+<li>קמפיינים אונליין ומדיה חברתית</li>
+<li>פלטפורמות ליצירת תוכן</li>
+<li>מטיס רחפנים (רישיון רת"א)</li>
+<li>אנליטיקס אונליין</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="content-section" id="education-content">
+<h2>השכלה</h2>
+<div class="education-item">
+<h3>פוסט MBA לימודים למנהלים בשיווק גלובלי</h3>
+<p>The Wharton School (Pen University) | 2005</p>
+</div>
+<div class="education-item">
+<h3>MBA (שיווק)</h3>
+<p>Interdisciplinary Center (IDC), הרצליה | 2005</p>
+</div>
+<div class="education-item">
+<h3>BA במדעי המחשב</h3>
+<p>Academic College of Tel-Aviv Yaffo, תל אביב | 2001</p>
+</div>
+</div>
+<div class="content-section" id="languages-content">
+<h2>שפות</h2>
+<div class="education-item">
+<h3>עברית</h3>
+<p>שפת אם</p>
+</div>
+<div class="education-item">
+<h3>אנגלית</h3>
+<p>בריטית, רמה קרובה לשפת אם</p>
+</div>
+<div class="education-item">
+<h3>צרפתית</h3>
+<p>בסיסית</p>
+</div>
+</div>
+<div class="content-section" id="full-experience-content">
+<div class="experience-accordion"></div>
+</div>
+<div class="content-section" id="about-content">
+<h2>אודות</h2>
+<p>קורות חיים אינטראקטיביים אלו נולדו מיוזמה יצירתית שנועדה להרחיק מעבר ממסמך סטטי ולהציע חוויה דינמית ומרתקת. הפרויקט זה, שפותח כיוזמה אישית עבור ראיון עבודה בחברת Xtend, משמש כעדות ליכולתי לדמיין קונספט ייחודי ולהוציא אותו לפועל במהירות.</p>
+<p>ניצלתי את המומחיות השיווקית והחשיבה היצירתית שלי כדי לעצב את הפרויקט, שיתפתי פעולה עם חבר לקבלת סיוע טכני והשתמשתי במספר כלי AI כדי לייעל את התהליך.</p>
+<p>בסופו של דבר, דף זה מדגים את הגישה האסטרטגית שלי: זיהוי צורך, תכנון היקף הפרויקט הנכון, מציאת האנשים והכלים המתאימים לביצוע, ואספקת מוצר מלוטש, אסתטי וממוקד משתמש.</p>
+</div>
+<div class="content-section" id="ai-chat-content">
+<div class="chat-window" id="main-chat-window"></div>
+</div>
+</div>
+</div>
+<div class="timeline-container">
+<div class="timeline-ruler"></div>
+<div class="timeline-event" data-role="quadpole"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2023-היום</div><div class="tooltip"><h3>Fractional CMO</h3><h4>Quadpole</h4></div></div>
+<div class="timeline-event" data-role="kcr"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2020-היום</div><div class="tooltip"><h3>Fractional CMO</h3><h4>KCR</h4></div></div>
+<div class="timeline-event" data-role="allcloud"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2017-2020</div><div class="tooltip"><h3>סמנכ"ל שיווק</h3><h4>AllCloud.io</h4></div></div>
+<div class="timeline-event" data-role="kueri"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2015-2017</div><div class="tooltip"><h3>מנהל פיתוח עסקי</h3><h4>Kueri.me</h4></div></div>
+<div class="timeline-event" data-role="terrascan"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2013-2015</div><div class="tooltip"><h3>מנהל שיווק</h3><h4>Terrascan LTD</h4></div></div>
+<div class="timeline-event" data-role="cortex"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2009-2013</div><div class="tooltip"><h3>סמנכ"ל שיווק</h3><h4>Cortex Medical</h4></div></div>
+<div class="timeline-event" data-role="gecko"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"></path></svg></div><div class="timeline-year">2004-2009</div><div class="tooltip"><h3>מנהל שיווק ומכירות</h3><h4>Gecko</h4></div></div>
+<div class="timeline-event" data-role="idf"><div class="timeline-marker"><svg class="icon" viewbox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"></path></svg></div><div class="timeline-year">שירות צבאי</div><div class="tooltip"><h3>חיל האוויר</h3><h4>מומחה אוויוניקה</h4></div></div>
+</div>
+</div>
+<div class="chat-form-container">
+<form class="chat-form" id="chat-form">
+<textarea id="chat-input" placeholder="שאל/י אותי כל דבר..." rows="1"></textarea>
+<button id="send-btn" type="submit">
+<svg height="24" viewbox="0 0 24 24" width="24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"></path></svg>
+</button>
+</form>
+</div>
+</main>
+<script>
         document.addEventListener('DOMContentLoaded', function () {
             // --- Data for Job Roles (all content translated to Hebrew) ---
             const experienceDetails = {
@@ -871,7 +855,7 @@
 - אני יזם בעל אוריינטציה יצירתית וחדשנית, ולומד מהר, עם יכולת לתכנן וליישם אסטרטגיות פול-פאנל, לטפח קשרי לקוחות חזקים ולהשיג צמיחה מדידה.
 - חוזקות: אוטודידקט, שחקן צוות, ממוקד נתונים, יצירתיות, נאמנות ותשוקה לרחפנים.
 - אם ישאל/ת על תחביבים, תענה: קדרות ואמנות, הטסת רחפני RC ובנייתם.
-- אני אוהב לבשל ואימא שלי היא בשלנית ידועה בשם אסנת לסטר ואבא שלי רופא מנתח
+- אני אוהב לבשל ואימא שלי היא בשלנית ידועה בשם אסנת לסטר ואבא שלי' ששמו צבי לסטר, הוא רופא מנתח
 - אני נשוי, לאהבת חיי בשם נועה, ואבא לילדה שהיא חיילת בשם נעמה
 - אם ישאל/ת על שירות צבאי, תענה: שירתתי בחיל האוויר הישראלי כמומחה אוויוניקה מוטסת.
 - אם ישאל/ת על אזרחות, תענה: יש לי אזרחות ישראלית ואירופאית.
@@ -920,5 +904,5 @@ ${getResumeText()}
             displayExperienceContent('quadpole');
         });
     </script>
-</body>
+</div></body>
 </html>
